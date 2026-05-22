@@ -1,0 +1,30 @@
+/* Custom styling */
+.info-box.bg-gray {
+    background-color: #6c757d !important;
+    color: white;
+}
+
+.info-box .info-box-icon {
+    background: rgba(255,255,255,0.2);
+    border-radius: 5px;
+}
+
+.info-box .info-box-content {
+    padding-left: 10px;
+}
+
+.card-outline.card-success {
+    border-top: 3px solid #28a745;
+}
+
+.card-outline.card-secondary {
+    border-top: 3px solid #6c757d;
+}
+
+.btn-tool {
+    color: #6c757d;
+}
+
+.btn-tool:hover {
+    color: #343a40;
+}
