@@ -196,23 +196,28 @@ class Bus_monitor extends CI_Controller {
     }
 
     public function get_bus_for_form($current_area = '') {
-        $this->db->select('id, plat_nomor, nama_po, tujuan, created_at, area');
-        $this->db->from('audio_queue');
-        $this->db->where('type', 'bus');
-        $this->db->where('plat_nomor IS NOT NULL');
-        $this->db->where('plat_nomor !=', '');
-        $this->db->where('DATE(created_at)', date('Y-m-d'));
-        
-        // ✨ FILTER: Jangan tampilkan bus yang sudah di area tertentu
-        if ($current_area) {
-            $this->db->where('area !=', $current_area);
-        }
-        
-        $this->db->order_by('created_at', 'DESC');
-        $data = $this->db->get()->result();
-        
-        echo json_encode($data);
+
+    $this->db->select('id, plat_nomor, nama_po, tujuan, created_at, area');
+    $this->db->from('audio_queue');
+    $this->db->where('type', 'bus');
+    $this->db->where('plat_nomor IS NOT NULL');
+    $this->db->where('plat_nomor !=', '');
+    $this->db->where('DATE(created_at)', date('Y-m-d'));
+
+    // ✅ Jangan tampilkan bus yang sudah keluar
+    $this->db->where('area !=', 'berangkat');
+
+    // ✨ FILTER AREA
+    if ($current_area) {
+        $this->db->where('area !=', $current_area);
     }
+
+    $this->db->order_by('created_at', 'DESC');
+
+    $data = $this->db->get()->result();
+
+    echo json_encode($data);
+}
 
         
 }
