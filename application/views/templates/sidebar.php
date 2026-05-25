@@ -92,6 +92,13 @@
     </a>
     <ul class="nav nav-treeview">
         <li class="nav-item">
+            <a href="<?= site_url('bus_monitor/masuk') ?>" 
+               class="nav-link <?= $this->uri->segment(2) == 'masuk' ? 'active' : '' ?>">
+                <i class="fas fa-download nav-icon text-sm text-success"></i>
+                <p>Bus Masuk</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="<?= site_url('bus_monitor/kedatangan') ?>" 
                class="nav-link <?= $this->uri->segment(2) == 'kedatangan' ? 'active' : '' ?>">
                 <i class="fas fa-download nav-icon text-sm text-success"></i>

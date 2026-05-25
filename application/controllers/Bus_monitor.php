@@ -20,6 +20,10 @@ class Bus_monitor extends CI_Controller {
         $data['title'] = 'Admin Keberangkatan';
         $this->load->view('bus_monitor/keberangkatan', $data);
     }
+    public function masuk() {
+        $data['title'] = 'Admin Keberangkatan';
+        $this->load->view('bus_monitor/bus_masuk', $data);
+    }
 
     public function kedatangan() {
         $data['title'] = 'Admin Kedatangan';
@@ -219,5 +223,127 @@ class Bus_monitor extends CI_Controller {
     echo json_encode($data);
 }
 
+public function get_po_by_plat()
+{
+    $plat = trim($this->input->post('plat_nomor'));
+
+    // ================= DATABASE 2 =================
+    $db2 = $this->load->database('db2', TRUE);
+
+    // ================= QUERY JOIN =================
+    $bus = $db2->query("
+        SELECT 
+            tb.nopol,
+            tb.id_po,
+            po.nama_po
+
+        FROM terminal_boardingpass tb
+
+        LEFT JOIN tbl_po po
+            ON po.id_po = tb.id_po
+
+        WHERE tb.nopol = '$plat'
+
+        LIMIT 1
+    ")->row();
+
+    // ================= RESPONSE =================
+    if($bus){
+
+        echo json_encode([
+            'status'  => true,
+            'nama_po' => $bus->nama_po
+        ]);
+
+    } else {
+
+        echo json_encode([
+            'status'  => false,
+            'nama_po' => null
+        ]);
+    }
+}
+
+public function save_bus_masuk()
+{
+    $plat = trim($this->input->post('plat_nomor'));
+
+    // ================= DATABASE 2 =================
+    $db2 = $this->load->database('db2', TRUE);
+
+    // ================= AMBIL DATA PO =================
+    $bus = $db2->query("
+        SELECT 
+            tb.nopol,
+            tb.id_po,
+            po.nama_po
+
+        FROM terminal_boardingpass tb
+
+        LEFT JOIN tbl_po po
+            ON po.id_po = tb.id_po
+
+        WHERE tb.nopol = '$plat'
+
+        LIMIT 1
+    ")->row();
+
+    // ================= DEFAULT =================
+    $nama_po = 'PO Tidak Dikenal';
+
+    if($bus){
+        $nama_po = $bus->nama_po;
+    }
+
+    // ================= INSERT =================
+    $data = [
+
+        'plat_nomor'     => $plat,
+
+        'nama_po'        => $nama_po,
+
+        'type'           => 'bus',
+
+        'area'           => 'masuk',
+
+        'created_at'     => date('Y-m-d H:i:s'),
+
+        'area_updated_at'=> date('Y-m-d H:i:s')
+    ];
+
+    $this->db->insert('audio_queue', $data);
+
+    echo json_encode([
+        'status' => true
+    ]);
+}
         
+public function get_bus_masuk()
+{
+    $data = $this->db
+
+        ->select('
+            id,
+            plat_nomor,
+            nama_po,
+            created_at
+        ')
+
+        ->from('audio_queue')
+
+        ->where('type', 'bus')
+
+        ->where('area', 'masuk')
+
+        ->where('DATE(created_at)', date('Y-m-d'))
+
+        ->order_by('created_at', 'DESC')
+
+        ->get()
+
+        ->result();
+
+    echo json_encode($data);
+}
+
 }
