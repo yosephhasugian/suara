@@ -5,12 +5,14 @@ class Lost extends CI_Controller {
 
     public function __construct(){
         parent::__construct();
+        $this->load->database();
         $this->load->model('Lost_model');
+        $this->load->model('Activity_model');
         $this->load->helper('url'); // Tambahkan ini jika pakai redirect/base_url
     
-    if($this->input->is_ajax_request()) {
-        $this->output->set_header('X-CSRF-TOKEN: '.$this->security->get_csrf_hash());
-    }
+        if($this->input->is_ajax_request()) {
+            $this->output->set_header('X-CSRF-TOKEN: '.$this->security->get_csrf_hash());
+        }
     }
 
     public function index(){
@@ -30,18 +32,49 @@ class Lost extends CI_Controller {
                 $foto = $this->upload->data('file_name');
             }
 
+            $nama_barang = $this->input->post('nama_barang');
+            $kategori = $this->input->post('kategori');
+            $lokasi = $this->input->post('lokasi');
+
             $data = [
-                'nama_barang' => $this->input->post('nama_barang'),
-                'kategori' => $this->input->post('kategori'),
+                'nama_barang' => $nama_barang,
+                'kategori' => $kategori,
                 'deskripsi' => $this->input->post('deskripsi'),
-                'lokasi_ditemukan' => $this->input->post('lokasi'),
+                'lokasi_ditemukan' => $lokasi,
                 'tanggal_ditemukan' => $this->input->post('tanggal'),
                 'nama_penemu' => $this->input->post('penemu'),
                 'kontak_penemu' => $this->input->post('kontak'),
                 'bukti_foto' => $foto
             ];
 
-            $this->Lost_model->insert($data);
+            $lost_id = $this->Lost_model->insert($data);
+
+            // Handle Automated Terminal Announcement (PA Broadcast)
+            $siarkan = $this->input->post('siarkan_audio');
+            if ($siarkan == '1') {
+                $lokasi_text = ($lokasi ?: 'terminal');
+                $audio_text_id = "Mohon perhatian. Telah ditemukan barang berupa " . $nama_barang . " di area " . $lokasi_text . ". Bagi Bapak Ibu penumpang yang merasa kehilangan barang tersebut, dipersilakan untuk mendatangi Pusat Layanan Informasi Terminal. Terima kasih.";
+                $audio_text_en = "Your attention please. A lost item, " . $nama_barang . ", has been found in the " . $lokasi_text . " area. For passengers who feel they have lost this item, please proceed to the Terminal Information Center. Thank you.";
+                $audio_text = $audio_text_id . " | " . $audio_text_en;
+                
+                $this->db->insert('audio_queue', [
+                    'type' => 'announcer',
+                    'text' => $audio_text,
+                    'priority' => 3,
+                    'status' => 'pending',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'area_updated_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            // Log activity
+            $this->Activity_model->log('add_lost_found', [
+                'lost_id' => $lost_id,
+                'nama_barang' => $nama_barang,
+                'kategori' => $kategori,
+                'siarkan_audio' => ($siarkan == '1')
+            ]);
+
             redirect('lost');
         }
 

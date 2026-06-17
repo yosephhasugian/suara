@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($title) ? $title : 'TTPG' ?></title>
+    <link rel="shortcut icon" href="<?= base_url('assets/images/logo_pulo_gebang.jpg') ?>" type="image/jpeg">
 
     <!-- AdminLTE -->
     <link rel="stylesheet" href="<?= base_url('assets/plugins/adminlte/css/adminlte.min.css') ?>">
@@ -11,6 +12,9 @@
 
     <!-- Custom -->
     <link rel="stylesheet" href="<?= base_url('assets/css/custom.css') ?>">
+
+    <!-- jQuery (Loaded early for inline scripts) -->
+    <script src="<?= base_url('assets/plugins/adminlte/plugins/jquery/jquery.min.js') ?>"></script>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">

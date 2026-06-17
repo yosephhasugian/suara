@@ -298,7 +298,7 @@ updateClock();
 function formatTime(timestamp, areaUpdated) {
     let timeValue = areaUpdated || timestamp;
     if (!timeValue) return '--:--';
-    let dt = new Date(timeValue);
+    let dt = new Date(timeValue.replace(/-/g, "/"));
     return dt.getHours().toString().padStart(2, '0') + ":" + dt.getMinutes().toString().padStart(2, '0');
 }
 

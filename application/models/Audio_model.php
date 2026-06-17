@@ -76,12 +76,46 @@ class Audio_model extends CI_Model {
 }
 
 
-    
+    public function get_due_scheduled_ads($limit = 10) {
+        $limit = max(1, (int) $limit);
+        $today = date('Y-m-d');
+        $current_time = date('H:i:s');
+        $day_of_week = date('w');
+
+        return $this->db->query("
+            SELECT *
+            FROM ads_schedule
+            WHERE is_active = 1
+              AND start_date <= ?
+              AND end_date >= ?
+              AND start_time <= ?
+              AND end_time >= ?
+              AND (
+                    repeat_days IS NULL
+                    OR repeat_days = ''
+                    OR repeat_days = '[]'
+                    OR repeat_days LIKE ?
+              )
+              AND (
+                    last_played IS NULL
+                    OR TIMESTAMPDIFF(MINUTE, last_played, NOW()) >= COALESCE(interval_minutes, 30)
+              )
+            ORDER BY created_at ASC
+            LIMIT {$limit}
+        ", [
+            $today,
+            $today,
+            $current_time,
+            $current_time,
+            '%"' . $day_of_week . '"%'
+        ])->result();
+    }
+
     // ✅ Proses iklan berjadwal (dipanggil via cron tiap menit)
     public function process_scheduled_ads() {
-        $active = $this->get_active_scheduled_ad();
-        if($active) {
-            // Cek apakah sudah ada queue untuk iklan ini dalam 2 menit terakhir (hindari duplikat)
+        $due_ads = $this->get_due_scheduled_ads();
+
+        foreach($due_ads as $active) {
             $exists = $this->db->where('type', 'ads')
                               ->where('ref_id', $active->id)
                               ->where('created_at >=', date('Y-m-d H:i:s', strtotime('-2 minutes')))
@@ -89,7 +123,9 @@ class Audio_model extends CI_Model {
                               ->count_all_results('audio_queue');
             
             if($exists == 0) {
-                $this->create_queue_item('ads', $active->ad_text, 1, $active->id);
+                $this->create_queue_item('ads', $active->ad_text, 4, $active->id);
+                $this->db->where('id', $active->id)
+                         ->update('ads_schedule', ['last_played' => date('Y-m-d H:i:s')]);
                 log_message('info', "Scheduled ad queued: {$active->ad_title}");
             }
         }
@@ -97,29 +133,10 @@ class Audio_model extends CI_Model {
       // ✅ GET: Queue items
    public function get_all_queue() {
 
-    // 🔥 Inject iklan
-    $scheduled_ad = $this->get_active_scheduled_ad();
-
-    if($scheduled_ad) {
-        $exists = $this->db->where('type', 'ads')
-            ->where('ref_id', $scheduled_ad->id)
-            ->where('created_at >=', date('Y-m-d H:i:s', strtotime('-1 minutes')))
-            ->where('status !=', 'done')
-            ->count_all_results('audio_queue');
-
-        if($exists == 0) {
-            $this->create_queue_item(
-                'ads',
-                $scheduled_ad->ad_text,
-                1,
-                $scheduled_ad->id
-            );
-        }
-    }
-
     // ✅ AMBIL DATA HARI INI SAJA + TIDAK TAMPILKAN DONE
     return $this->db
-        ->where('DATE(created_at)', date('Y-m-d')) // 🔥 penting
+        ->where('created_at >=', date('Y-m-d 00:00:00'))
+        ->where('created_at <=', date('Y-m-d 23:59:59'))
         ->where_in('status', ['pending','playing']) // 🔥 jangan tampilkan done
         ->order_by('priority', 'ASC')
         ->order_by('created_at', 'ASC')

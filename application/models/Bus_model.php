@@ -11,7 +11,8 @@ class Bus_model extends CI_Model {
         $this->db->where('type', 'bus');
         $this->db->where('plat_nomor IS NOT NULL');
         $this->db->where('plat_nomor !=', '');
-        $this->db->where('DATE(created_at)', date('Y-m-d'));
+        $this->db->where('created_at >=', date('Y-m-d 00:00:00'));
+        $this->db->where('created_at <=', date('Y-m-d 23:59:59'));
         
         // ✨ Urutkan berdasarkan jam masuk area, bukan jam pertama input
         $this->db->order_by('area_updated_at', 'DESC');
@@ -27,7 +28,8 @@ class Bus_model extends CI_Model {
         $this->db->where('area !=', 'keberangkatan'); 
         $this->db->where('plat_nomor IS NOT NULL');
         $this->db->where('plat_nomor !=', '');
-        $this->db->where('DATE(created_at)', date('Y-m-d'));
+        $this->db->where('created_at >=', date('Y-m-d 00:00:00'));
+        $this->db->where('created_at <=', date('Y-m-d 23:59:59'));
         $this->db->order_by('created_at', 'ASC');
         return $this->db->get()->result();
     }

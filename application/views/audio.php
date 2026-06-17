@@ -241,6 +241,22 @@
         <small class="text-white-50 header-subtitle">Terminal Pulo Gebang - Control Panel</small>
     </div>
 
+    <!-- Alert Audio Blocked -->
+    <div id="audioBlockedAlert" class="alert alert-warning border-0 shadow-sm mb-3 animate__animated animate__fadeIn">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span style="font-size: 1.5rem;">🚨</span>
+                <div>
+                    <h6 class="alert-heading fw-bold mb-0 text-dark">Sistem Suara Terkunci / Muted</h6>
+                    <small class="text-dark opacity-75">Browser membatasi pemutaran audio otomatis. Silakan klik tombol di samping atau klik mana saja di halaman ini untuk mengaktifkan suara pengumuman.</small>
+                </div>
+            </div>
+            <button class="btn btn-warning btn-sm fw-bold border-dark px-3" onclick="unlockAudio(event)">
+                🔓 Aktifkan Suara
+            </button>
+        </div>
+    </div>
+
     <!-- Status Card -->
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
@@ -248,17 +264,77 @@
             <span class="badge bg-light text-primary" id="queueBadge">0 pending</span>
         </div>
         <div class="card-body py-2">
-            <div id="currentAudio" class="text-muted small">Tidak ada audio yang sedang diputar</div>
-            <div class="mt-2 d-flex gap-2 flex-wrap btn-group-actions">
-                <button class="btn btn-success btn-sm" onclick="getNextAudio()">
-                    <i class="bi bi-play-circle me-1"></i>Play Next
+            <div id="currentAudio" class="text-muted small mb-2">Tidak ada audio yang sedang diputar</div>
+            <div class="mt-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#ttsSettingsCollapse">
+                    <i class="bi bi-gear-fill me-1"></i> Pengaturan Suara
                 </button>
-                <button class="btn btn-secondary btn-sm" onclick="refreshQueue()">
-                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh
-                </button>
-                <button class="btn btn-danger btn-sm" onclick="stopAllAudio()">
-                    <i class="bi bi-stop-circle me-1"></i>Stop All
-                </button>
+            </div>
+
+            <!-- COLLAPSIBLE TTS SETTINGS -->
+            <div class="collapse mt-3 border-top pt-3" id="ttsSettingsCollapse">
+                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-sliders me-1"></i> Pengaturan Pengeras Suara (Text-to-Speech)</h6>
+                <div class="row g-4">
+                    <!-- ID VOICE SETTINGS -->
+                    <div class="col-md-6 border-md-end">
+                        <span class="fw-bold text-dark d-block mb-2 small"><i class="bi bi-flag-fill text-danger me-1"></i> Pengaturan Bahasa Indonesia</span>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold mb-1" style="font-size: 0.75rem;">🗣️ Pilihan Suara (Voice)</label>
+                            <select id="ttsVoiceSelect" class="form-select form-select-sm">
+                                <option value="">Memindai suara perangkat...</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold mb-1" style="font-size: 0.75rem;">⏩ Kecepatan Bicara (Rate)</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="range" id="ttsRateRange" class="form-range form-range-sm" min="0.5" max="1.5" step="0.05" value="0.9">
+                                <span id="ttsRateVal" class="badge bg-secondary">0.90x</span>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold mb-1" style="font-size: 0.75rem;">🎼 Nada Suara (Pitch)</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="range" id="ttsPitchRange" class="form-range form-range-sm" min="0.5" max="1.5" step="0.05" value="1.0">
+                                <span id="ttsPitchVal" class="badge bg-secondary">1.0</span>
+                            </div>
+                        </div>
+                        <div class="text-end mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="testTtsVoice('id')">
+                                <i class="bi bi-soundwave me-1"></i> Tes Suara ID
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- EN VOICE SETTINGS -->
+                    <div class="col-md-6">
+                        <span class="fw-bold text-dark d-block mb-2 small"><i class="bi bi-flag-fill text-primary me-1"></i> Pengaturan Bahasa Inggris</span>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold mb-1" style="font-size: 0.75rem;">🗣️ Pilihan Suara (Voice)</label>
+                            <select id="ttsEnVoiceSelect" class="form-select form-select-sm">
+                                <option value="">Memindai suara perangkat...</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold mb-1" style="font-size: 0.75rem;">⏩ Kecepatan Bicara (Rate)</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="range" id="ttsEnRateRange" class="form-range form-range-sm" min="0.5" max="1.5" step="0.05" value="0.9">
+                                <span id="ttsEnRateVal" class="badge bg-secondary">0.90x</span>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold mb-1" style="font-size: 0.75rem;">🎼 Nada Suara (Pitch)</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="range" id="ttsEnPitchRange" class="form-range form-range-sm" min="0.5" max="1.5" step="0.05" value="1.0">
+                                <span id="ttsEnPitchVal" class="badge bg-secondary">1.0</span>
+                            </div>
+                        </div>
+                        <div class="text-end mt-2">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="testTtsVoice('en')">
+                                <i class="bi bi-soundwave me-1"></i> Tes Suara EN
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -267,9 +343,21 @@
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-success bg-gradient text-white d-flex justify-content-between align-items-center py-3">
             <h6 class="mb-0"><i class="bi bi-youtube me-2"></i>Background Music</h6>
-            <span class="badge rounded-pill bg-white text-success" style="font-size: 0.7rem;">
-                <i class="bi bi-play-fill me-1"></i>Putar Manual
-            </span>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Pause/Play Controls -->
+                <button type="button" class="btn btn-light btn-sm text-success fw-bold py-1 px-3 shadow-sm" onclick="togglePlayPauseMusic()" id="btnMusicPlayPause" style="font-size: 0.8rem; border-radius: 20px;">
+                    <i class="bi bi-pause-fill me-1"></i>Pause
+                </button>
+                <button type="button" class="btn btn-light btn-sm text-danger fw-bold py-1 px-3 shadow-sm" onclick="stopMusicPlayback()" title="Stop musik" style="font-size: 0.8rem; border-radius: 20px;">
+                    <i class="bi bi-stop-fill me-1"></i>Stop
+                </button>
+                <button type="button" class="btn btn-light btn-sm text-primary fw-bold py-1 px-3 shadow-sm" onclick="restartPlaylist()" title="Putar dari awal" style="font-size: 0.8rem; border-radius: 20px;">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Restart
+                </button>
+                <span class="badge rounded-pill bg-white text-success" style="font-size: 0.7rem;">
+                    <i class="bi bi-play-fill me-1"></i>Putar Manual
+                </span>
+            </div>
         </div>
         <div class="card-body p-4">
             <div class="row g-4 align-items-start">
@@ -312,13 +400,13 @@
     <!-- Main Forms Row -->
     <div class="row g-2">
         <!-- Announcer Manual -->
-        <div class="col-md-6">
-            <div class="card h-100">
+        <div class="col-md-6 d-flex flex-column">
+            <div class="card flex-grow-1 mb-0 d-flex flex-column">
                 <div class="card-header bg-purple text-white">
                     <i class="bi bi-mic-fill me-1"></i>🎤 Announcer Manual
                 </div>
-                <div class="card-body py-2">
-                    <form id="formAnnouncer">
+                <div class="card-body py-2 d-flex flex-column">
+                    <form id="formAnnouncer" class="d-flex flex-column flex-grow-1 justify-content-between">
                         <div class="row g-2">
                             <div class="col-12">
                                 <label class="form-label small mb-1">👤 Nama Penumpang</label>
@@ -341,25 +429,27 @@
                                        placeholder="Contoh: Pintu 3" required>
                             </div>
                         </div>
-                        <div class="mt-2 template-preview">
-                            <small class="text-muted d-block mb-1"><i class="bi bi-eye me-1"></i>Preview:</small>
-                            <span id="announcerPreview" class="small">
-                                Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama <strong>[Nama]</strong>.
-                                Untuk penumpang bus <strong>[PO]</strong> tujuan <strong>[Jurusan]</strong>,
-                                ditunggu kehadiran Anda di <strong>pintu [Gate]</strong>,
-                                dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.
-                            </span>
+                        <div class="mt-3 flex-grow-1 d-flex flex-column justify-content-end">
+                            <div class="template-preview mb-2">
+                                <small class="text-muted d-block mb-1"><i class="bi bi-eye me-1"></i>Preview:</small>
+                                <span id="announcerPreview" class="small">
+                                    Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama <strong>[Nama]</strong>.
+                                    Untuk penumpang bus <strong>[PO]</strong> tujuan <strong>[Jurusan]</strong>,
+                                    ditunggu kehadiran Anda di <strong>pintu [Gate]</strong>,
+                                    dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.
+                                </span>
+                            </div>
+                            <button type="submit" class="btn btn-purple btn-sm w-100">
+                                <i class="bi bi-broadcast me-1"></i>📢 Siarkan Pengumuman
+                            </button>
                         </div>
-                        <button type="submit" class="btn btn-purple btn-sm w-100 mt-2">
-                            <i class="bi bi-broadcast me-1"></i>📢 Siarkan Pengumuman
-                        </button>
                     </form>
                 </div>
             </div>
         </div>
 
         <!-- Bus Entry + Prayer Button -->
-        <div class="col-md-6">
+        <div class="col-md-6 d-flex flex-column">
             <!-- Form Bus -->
             <div class="card mb-2">
                 <div class="card-header bg-info text-white">
@@ -378,6 +468,20 @@
                                 <input type="text" class="form-control form-control-sm" name="po"
                                        placeholder="PO. Sinar Jaya" required>
                             </div>
+                            <div class="col-12 mt-1">
+                                <label class="form-label small mb-1">Tujuan Akhir</label>
+                                <input type="text" class="form-control form-control-sm" name="tujuan"
+                                       placeholder="Contoh: Surabaya / Solo">
+                            </div>
+                            <div class="col-12 mt-1">
+                                <label class="form-label small mb-1">Status Lanjutan (Area Pelayanan)</label>
+                                <select name="target_area" class="form-control form-control-sm">
+                                    <option value="">-- Hanya Masuk --</option>
+                                    <option value="kedatangan">Kedatangan</option>
+                                    <option value="pengendapan">Pengendapan</option>
+                                    <option value="keberangkatan">Keberangkatan</option>
+                                </select>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">
                             <i class="bi bi-plus-circle me-1"></i>Tambah ke Queue
@@ -387,105 +491,51 @@
             </div>
             
             <!-- Prayer Announcement Button -->
-            <div class="card p-3 text-center border-success">
-                <div class="small text-muted mb-2">
-                    <i class="bi bi-mosque-fill me-1"></i>Pengumuman Sholat - Masjid Lantai 1
+            <div class="card flex-grow-1 d-flex flex-column mb-0">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span><i class="bi bi-mosque-fill me-1"></i> Pengumuman & Jadwal Sholat</span>
+                    <span id="prayerDateText" class="badge bg-white text-success fw-bold" style="font-size: 0.8rem;">-</span>
                 </div>
-                <button class="btn btn-success btn-custom w-100" onclick="addPrayerAnnounce()">
-                    🕌📢 Siarkan: Waktu Sholat Tiba
-                </button>
-                <small class="text-muted d-block mt-2">
-                    Kepada Bapak/Ibu penumpang, bagi Anda yang ingin menunaikan ibadah salat,
-                    tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal.
-                    Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih
-                </small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Form Iklan Berjadwal -->
-    <div class="modal fade" id="modalAdsSchedule" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <form id="formAdsSchedule">
-                    <div class="modal-header bg-warning">
-                        <h5 class="modal-title">📅 Jadwal Himbawan / Iklan</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label small">Judul Iklan</label>
-                                <input type="text" class="form-control form-control-sm" name="ad_title" placeholder="Contoh: Himbauan Menjaga Kebersihan">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small">Durasi (detik)</label>
-                                <select class="form-select form-select-sm" name="duration">
-                                    <option value="15">15 detik</option>
-                                    <option value="30" selected>30 detik</option>
-                                    <option value="60">60 detik</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-semibold">🔁 Interval Putar</label>
-                                <select class="form-select form-select-sm" name="interval_minutes" required>
-                                    <option value="5">Setiap 5 menit</option>
-                                    <option value="10">Setiap 10 menit</option>
-                                    <option value="15">Setiap 15 menit</option>
-                                    <option value="30" selected>Setiap 30 menit</option>
-                                    <option value="60">Setiap 1 jam</option>
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small">Pesan Iklan (akan dibacakan)</label>
-                                <textarea class="form-control form-control-sm" name="ad_text" rows="3" required placeholder="Ketik pesan yang ingin diumumkan..."></textarea>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small">📅 Tanggal Mulai</label>
-                                <input type="date" class="form-control form-control-sm" name="start_date" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small">📅 Tanggal Selesai</label>
-                                <input type="date" class="form-control form-control-sm" name="end_date" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small">⏰ Jam Mulai</label>
-                                <input type="time" class="form-control form-control-sm" name="start_time" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small">⏰ Jam Selesai</label>
-                                <input type="time" class="form-control form-control-sm" name="end_time" required>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small">🔁 Ulangi Setiap Hari</label>
-                                <div class="d-flex gap-2 flex-wrap">
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="repeat_days[]" value="0" id="d0"><label class="form-check-label small" for="d0">Min</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="repeat_days[]" value="1" id="d1"><label class="form-check-label small" for="d1">Sen</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="repeat_days[]" value="2" id="d2"><label class="form-check-label small" for="d2">Sel</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="repeat_days[]" value="3" id="d3"><label class="form-check-label small" for="d3">Rab</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="repeat_days[]" value="4" id="d4"><label class="form-check-label small" for="d4">Kam</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="repeat_days[]" value="5" id="d5"><label class="form-check-label small" for="d5">Jum</label></div>
-                                    <div class="form-check"><input class="form-check-input" type="checkbox" name="repeat_days[]" value="6" id="d6"><label class="form-check-label small" for="d6">Sab</label></div>
-                                </div>
-                            </div>
+                <div class="card-body py-2 d-flex flex-column justify-content-between flex-grow-1">
+                    <div class="d-flex justify-content-between gap-1 flex-wrap mb-3 text-center" id="prayerTimeContainer">
+                        <div class="flex-grow-1 p-1 bg-light border rounded" style="font-size: 0.75rem;">
+                            <div class="text-muted" style="font-size: 0.7rem;">Subuh</div>
+                            <strong id="time-subuh" class="text-success">04:45</strong>
+                        </div>
+                        <div class="flex-grow-1 p-1 bg-light border rounded" style="font-size: 0.75rem;">
+                            <div class="text-muted" style="font-size: 0.7rem;">Dzuhur</div>
+                            <strong id="time-dzuhur" class="text-success">12:05</strong>
+                        </div>
+                        <div class="flex-grow-1 p-1 bg-light border rounded" style="font-size: 0.75rem;">
+                            <div class="text-muted" style="font-size: 0.7rem;">Ashar</div>
+                            <strong id="time-ashar" class="text-success">15:20</strong>
+                        </div>
+                        <div class="flex-grow-1 p-1 bg-light border rounded" style="font-size: 0.75rem;">
+                            <div class="text-muted" style="font-size: 0.7rem;">Maghrib</div>
+                            <strong id="time-maghrib" class="text-success">18:00</strong>
+                        </div>
+                        <div class="flex-grow-1 p-1 bg-light border rounded" style="font-size: 0.75rem;">
+                            <div class="text-muted" style="font-size: 0.7rem;">Isya</div>
+                            <strong id="time-isya" class="text-success">19:10</strong>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-warning btn-sm">💾 Simpan Jadwal</button>
+                    <div>
+                        <button class="btn btn-success btn-custom w-100" onclick="addPrayerAnnounce()">
+                            <i class="bi bi-broadcast me-1"></i>🕌📢 Siarkan: Waktu Sholat Tiba
+                        </button>
+                        <div class="mt-2 text-center" style="font-size: 0.7rem; color: #198754; font-weight: 500;">
+                            <i class="bi bi-cloud-check-fill me-1"></i> Sinkronisasi Jadwal Sholat API Otomatis Aktif
+                        </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Pengumuman & Iklan Card -->
-    <div class="card">
-        <div class="card-header bg-warning text-dark d-flex justify-content-between">
+    <div class="card mt-3 mb-3">
+        <div class="card-header bg-warning text-dark">
             <span><i class="bi bi-megaphone-fill me-1"></i>📢 Pengumuman & Iklan</span>
-            <button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modalAdsSchedule">
-                <i class="bi bi-calendar-plus"></i> Jadwal Iklan
-            </button>
         </div>
         <div class="card-body py-2">
             <form id="formAds" class="d-flex gap-2">
@@ -496,7 +546,7 @@
     </div>
 
     <!-- Quick Ads Form -->
-    <div class="card">
+    <div class="card mb-3">
         <div class="card-header bg-warning text-dark">
             <i class="bi bi-megaphone-fill me-1"></i>📢 Pengumuman Cepat
         </div>
@@ -512,10 +562,21 @@
     </div>
 
     <!-- Queue List -->
-    <div class="card">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+    <div class="card mb-3">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
             <span><i class="bi bi-list-ul me-1"></i>Daftar Queue Audio</span>
-            <span class="badge bg-light text-dark" id="queueCount">0 item</span>
+            <div class="d-flex gap-2 align-items-center">
+                <button class="btn btn-sm btn-warning text-dark fw-bold" onclick="stopQueue()" id="btnStopQueue" title="Stop/Hentikan antrian otomatis">
+                    <i class="bi bi-stop-fill me-1"></i>Stop
+                </button>
+                <button class="btn btn-sm btn-success fw-bold" onclick="resumeQueue()" id="btnResumeQueue" title="Lanjutkan antrian otomatis">
+                    <i class="bi bi-play-fill me-1"></i>Lanjutkan
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="clearQueue()" title="Hapus semua antrian">
+                    <i class="bi bi-trash-fill me-1"></i>Bersihkan
+                </button>
+                <span class="badge bg-light text-dark" id="queueCount">0 item</span>
+            </div>
         </div>
         <div class="card-body py-2" style="max-height: 350px; overflow-y: auto;">
             <div id="queueList">
@@ -542,23 +603,192 @@
 <script>
 // ================= CONFIG =================
 const BASE_URL = "<?php echo rtrim(base_url(), '/') . '/'; ?>";
-const prayerSchedule = {
-    test:  "08:50",    
+let prayerSchedule = {
     subuh:  "04:45",
     dzuhur: "12:05",
     ashar:  "15:20",
     maghrib:"18:00",
     isya:   "19:10"
 };
+
+function getIndonesianDate() {
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const now = new Date();
+    const dayName = days[now.getDay()];
+    const date = now.getDate();
+    const monthName = months[now.getMonth()];
+    const year = now.getFullYear();
+    return `${dayName}, ${date} ${monthName} ${year}`;
+}
+
+function updatePrayerUiList(hijriInfo = null) {
+    $('#time-subuh').text(prayerSchedule.subuh);
+    $('#time-dzuhur').text(prayerSchedule.dzuhur);
+    $('#time-ashar').text(prayerSchedule.ashar);
+    $('#time-maghrib').text(prayerSchedule.maghrib);
+    $('#time-isya').text(prayerSchedule.isya);
+
+    let dateStr = getIndonesianDate();
+    if (hijriInfo) {
+        dateStr += ` / ${hijriInfo.day} ${hijriInfo.month.en} ${hijriInfo.year} H`;
+    }
+    $('#prayerDateText').text(dateStr);
+}
+
+function fetchPrayerTimes() {
+    $.ajax({
+        url: 'https://api.aladhan.com/v1/timingsByCity?city=Jakarta&country=Indonesia',
+        method: 'GET',
+        dataType: 'json',
+        success: function(res) {
+            if (res && res.data && res.data.timings) {
+                let t = res.data.timings;
+                prayerSchedule.subuh = t.Fajr;
+                prayerSchedule.dzuhur = t.Dhuhr;
+                prayerSchedule.ashar = t.Asr;
+                prayerSchedule.maghrib = t.Maghrib;
+                prayerSchedule.isya = t.Isha;
+                console.log("🕌 Jadwal sholat hari ini tersinkronisasi otomatis (API):", prayerSchedule);
+                
+                let hj = (res.data.date && res.data.date.hijri) ? res.data.date.hijri : null;
+                updatePrayerUiList(hj);
+            }
+        },
+        error: function() {
+            console.warn("⚠️ Gagal sinkronisasi API jadwal sholat, menggunakan waktu cadangan (hardcoded).");
+            updatePrayerUiList();
+        }
+    });
+}
 let ytPlayer = null;
 let currentSpeech = null;
 let isProcessingQueue = false;
 let audioMutex = false;
+let isQueueManuallyStopped = false;
 let musicPlaylist = [];
 let currentTrackIndex = -1;
+let currentPlayingAudioId = null;
 let adsData = [];
 let lastPrayerTrigger = {};
 let adsInterval = null;
+let isMusicPausedByQueue = false;
+
+// ================= TTS CONFIG =================
+let selectedVoiceName = localStorage.getItem('tts_voice_name') || '';
+let selectedEnVoiceName = localStorage.getItem('tts_en_voice_name') || '';
+let ttsRate = parseFloat(localStorage.getItem('tts_rate') || '0.9');
+let ttsPitch = parseFloat(localStorage.getItem('tts_pitch') || '1.0');
+let ttsEnRate = parseFloat(localStorage.getItem('tts_en_rate') || '0.9');
+let ttsEnPitch = parseFloat(localStorage.getItem('tts_en_pitch') || '1.0');
+let isMusicManuallyPaused = localStorage.getItem('music_manually_paused') === 'true';
+
+function populateTtsVoices() {
+    if (!('speechSynthesis' in window)) return;
+    let voices = window.speechSynthesis.getVoices();
+    let selectId = $('#ttsVoiceSelect');
+    let selectEn = $('#ttsEnVoiceSelect');
+    selectId.empty();
+    selectEn.empty();
+
+    if (voices.length === 0) {
+        selectId.append('<option value="">Tidak ada suara terdeteksi</option>');
+        selectEn.append('<option value="">Tidak ada suara terdeteksi</option>');
+        return;
+    }
+
+    // Urutkan suara Indonesia duluan untuk selectId
+    let idVoices = [...voices].sort((a, b) => {
+        let aIndo = a.lang.includes('id') || a.name.toLowerCase().includes('indonesian');
+        let bIndo = b.lang.includes('id') || b.name.toLowerCase().includes('indonesian');
+        if (aIndo && !bIndo) return -1;
+        if (!aIndo && bIndo) return 1;
+        return a.name.localeCompare(b.name);
+    });
+
+    // Urutkan suara Inggris duluan untuk selectEn
+    let enVoices = [...voices].sort((a, b) => {
+        let aEn = a.lang.includes('en') || a.name.toLowerCase().includes('english');
+        let bEn = b.lang.includes('en') || b.name.toLowerCase().includes('english');
+        if (aEn && !bEn) return -1;
+        if (!aEn && bEn) return 1;
+        return a.name.localeCompare(b.name);
+    });
+
+    let hasSelectedId = false;
+    idVoices.forEach(voice => {
+        let isIndo = voice.lang.includes('id') || voice.name.toLowerCase().includes('indonesian');
+        let label = `${voice.name} (${voice.lang})${isIndo ? ' 🇮🇩 [Rekomendasi]' : ''}`;
+        let option = $('<option></option>').val(voice.name).text(label);
+        
+        if (selectedVoiceName === voice.name) {
+            option.prop('selected', true);
+            hasSelectedId = true;
+        } else if (!selectedVoiceName && isIndo && !hasSelectedId) {
+            option.prop('selected', true);
+            selectedVoiceName = voice.name;
+            hasSelectedId = true;
+        }
+        selectId.append(option);
+    });
+
+    let hasSelectedEn = false;
+    enVoices.forEach(voice => {
+        let isEn = voice.lang.includes('en') || voice.name.toLowerCase().includes('english');
+        let label = `${voice.name} (${voice.lang})${isEn ? ' 🇬🇧 [Rekomendasi]' : ''}`;
+        let option = $('<option></option>').val(voice.name).text(label);
+        
+        if (selectedEnVoiceName === voice.name) {
+            option.prop('selected', true);
+            hasSelectedEn = true;
+        } else if (!selectedEnVoiceName && isEn && !hasSelectedEn) {
+            option.prop('selected', true);
+            selectedEnVoiceName = voice.name;
+            hasSelectedEn = true;
+        }
+        selectEn.append(option);
+    });
+}
+
+function testTtsVoice(lang) {
+    let sampleText = lang === 'en' 
+        ? "Attention. Testing the English announcer voice settings. Thank you."
+        : "Perhatian. Pengujian sistem pengemas suara bahasa Indonesia berjalan dengan baik. Terima kasih.";
+    let langCode = lang === 'en' ? 'en-US' : 'id-ID';
+    stopAllAudio();
+    speakTextSequential(sampleText, langCode, function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Tes Selesai',
+            text: 'Suara berhasil diuji!',
+            timer: 2000,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+    });
+}
+
+function unlockAudio(event) {
+    if (event) event.stopPropagation();
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        let utterance = new SpeechSynthesisUtterance(" ");
+        window.speechSynthesis.speak(utterance);
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Suara Aktif',
+            text: 'Izin suara berhasil didapatkan dari browser!',
+            timer: 2000,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+        
+        $('#audioBlockedAlert').addClass('d-none');
+    }
+}
 
 function getPriority(type) {
     switch(type) {
@@ -593,7 +823,7 @@ function getCsrfData() {
 }
 
 function ciPost(url, formData, callback) {
-    $.ajax({
+    return $.ajax({
         url: BASE_URL + url,
         type: 'POST',
         data: typeof formData === 'string' ? formData + '&' + $.param(getCsrfData()) : {...formData, ...getCsrfData()},
@@ -612,7 +842,7 @@ function ciPost(url, formData, callback) {
 }
 
 function ciGet(url, callback) {
-    $.ajax({
+    return $.ajax({
         url: BASE_URL + url,
         type: 'GET',
         data: getCsrfData(),
@@ -662,10 +892,13 @@ function checkPrayerSchedule() {
     console.log("⏰ Cek waktu:", now.toLocaleTimeString());
     Object.entries(prayerSchedule).forEach(([name, time]) => {
         let reminderTime = subtractMinutes(time, 10);
+        let nameCap = name.charAt(0).toUpperCase() + name.slice(1);
         if (isSameMinute(now, reminderTime)) {
             if (lastPrayerTrigger[name + '_reminder'] === reminderTime) return;
             lastPrayerTrigger[name + '_reminder'] = reminderTime;
-            let text = `Perhatian, waktu sholat ${name} akan segera tiba dalam 10 menit. Silakan bersiap menuju masjid terminal.`;
+            let text_id = `Perhatian, waktu sholat ${name} akan segera tiba dalam 10 menit. Silakan bersiap menuju masjid terminal.`;
+            let text_en = `Attention, the prayer time for ${nameCap} will arrive in 10 minutes. Please prepare to proceed to the terminal mosque.`;
+            let text = text_id + " | " + text_en;
             ciPost('audio/add_prayer_announce', { text: text }, function(res){
                 console.log("🕌 REMINDER RESPONSE:", res);
                 if(res?.status === 'ok') refreshQueue();
@@ -674,7 +907,9 @@ function checkPrayerSchedule() {
         if (isSameMinute(now, time)) {
             if (lastPrayerTrigger[name] === time) return;
             lastPrayerTrigger[name] = time;
-            let text = `Kepada seluruh penumpang, waktu sholat ${name} telah tiba. , bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.`;
+            let text_id = `Kepada seluruh penumpang, waktu sholat ${name} telah tiba. Bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.`;
+            let text_en = `To all passengers, the prayer time for ${nameCap} has arrived. For those who wish to perform the prayer, a comfortable mosque facility is available on the 1st floor of the terminal. Let us remain diligent in our prayers during your journey. Thank you.`;
+            let text = text_id + " | " + text_en;
             ciPost('audio/add_prayer_announce', { text: text }, function(res){
                 console.log("🕌 SHOLAT RESPONSE:", res);
                 if(res?.status === 'ok') refreshQueue();
@@ -684,11 +919,98 @@ function checkPrayerSchedule() {
 }
 
 $(document).ready(function() {
+    // ================= INITIALIZE TTS CONTROLS =================
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = function() {
+            populateTtsVoices();
+        };
+        populateTtsVoices();
+    }
+
+    // Auto-unlock audio on first body click
+    $(document).on('click', function() {
+        if ('speechSynthesis' in window && !window.speechSynthesis.speaking) {
+            try {
+                let u = new SpeechSynthesisUtterance("");
+                window.speechSynthesis.speak(u);
+            } catch(e){}
+        }
+        $('#audioBlockedAlert').addClass('d-none');
+
+        // Auto-play/resume YouTube music if not playing and not manually paused
+        if (ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+            let state = ytPlayer.getPlayerState();
+            if (state !== YT.PlayerState.PLAYING && !isMusicManuallyPaused) {
+                if (currentTrackIndex === -1 && musicPlaylist.length > 0) {
+                    playYoutubeByIndex(0);
+                } else {
+                    resumeYoutube();
+                }
+            }
+        }
+    });
+    
+    // Set initial values from localStorage
+    $('#ttsRateRange').val(ttsRate);
+    $('#ttsRateVal').text(ttsRate.toFixed(2) + 'x');
+    $('#ttsPitchRange').val(ttsPitch);
+    $('#ttsPitchVal').text(ttsPitch.toFixed(1));
+
+    $('#ttsEnRateRange').val(ttsEnRate);
+    $('#ttsEnRateVal').text(ttsEnRate.toFixed(2) + 'x');
+    $('#ttsEnPitchRange').val(ttsEnPitch);
+    $('#ttsEnPitchVal').text(ttsEnPitch.toFixed(1));
+
+    // Handle range/select changes
+    $('#ttsVoiceSelect').on('change', function() {
+        selectedVoiceName = $(this).val();
+        localStorage.setItem('tts_voice_name', selectedVoiceName);
+    });
+
+    $('#ttsEnVoiceSelect').on('change', function() {
+        selectedEnVoiceName = $(this).val();
+        localStorage.setItem('tts_en_voice_name', selectedEnVoiceName);
+    });
+
+    $('#ttsRateRange').on('input', function() {
+        ttsRate = parseFloat($(this).val());
+        $('#ttsRateVal').text(ttsRate.toFixed(2) + 'x');
+        localStorage.setItem('tts_rate', ttsRate);
+    });
+
+    $('#ttsPitchRange').on('input', function() {
+        ttsPitch = parseFloat($(this).val());
+        $('#ttsPitchVal').text(ttsPitch.toFixed(1));
+        localStorage.setItem('tts_pitch', ttsPitch);
+    });
+
+    $('#ttsEnRateRange').on('input', function() {
+        ttsEnRate = parseFloat($(this).val());
+        $('#ttsEnRateVal').text(ttsEnRate.toFixed(2) + 'x');
+        localStorage.setItem('tts_en_rate', ttsEnRate);
+    });
+
+    $('#ttsEnPitchRange').on('input', function() {
+        ttsEnPitch = parseFloat($(this).val());
+        $('#ttsEnPitchVal').text(ttsEnPitch.toFixed(1));
+        localStorage.setItem('tts_en_pitch', ttsEnPitch);
+    });
+
     refreshQueue();
+    updatePrayerUiList();
+    fetchPrayerTimes();
     loadMusicList();
     initAnnouncerPreview();
     updateLastUpdate();
     loadAdsSchedule();
+
+    // Set Play/Pause button initial state based on saved preference
+    let btn = $('#btnMusicPlayPause');
+    if (isMusicManuallyPaused) {
+        btn.html('<i class="bi bi-play-fill me-1"></i>Play').removeClass('text-success').addClass('text-danger');
+    } else {
+        btn.html('<i class="bi bi-pause-fill me-1"></i>Pause').removeClass('text-danger').addClass('text-success');
+    }
 
     setInterval(() => {
         if (!isProcessingQueue && !audioMutex) {
@@ -732,49 +1054,6 @@ $(document).ready(function() {
                 refreshQueue();
             } else {
                 Swal.fire('❌ Gagal!', res?.message || 'Error', 'error');
-            }
-        });
-    });
-
-    $('#formAdsSchedule').on('submit', function(e) {
-        e.preventDefault();
-        let form = $(this);
-        let startDate = form.find('input[name="start_date"]').val();
-        let endDate   = form.find('input[name="end_date"]').val();
-        let startTime = form.find('input[name="start_time"]').val();
-        let endTime   = form.find('input[name="end_time"]').val();
-        if (startDate > endDate) {
-            Swal.fire('Error', 'Tanggal selesai harus setelah tanggal mulai!', 'error');
-            return;
-        }
-        if (startTime >= endTime) {
-            Swal.fire('Error', 'Jam selesai harus setelah jam mulai!', 'error');
-            return;
-        }
-        let repeatDays = [];
-        form.find('input[name="repeat_days[]"]:checked').each(function() {
-            repeatDays.push($(this).val());
-        });
-        let data = {
-            ad_title: form.find('[name="ad_title"]').val(),
-            ad_text: form.find('[name="ad_text"]').val(),
-            duration: form.find('[name="duration"]').val(),
-            interval_minutes: form.find('[name="interval_minutes"]').val(),
-            start_date: startDate,
-            end_date: endDate,
-            start_time: startTime,
-            end_time: endTime,
-            repeat_days: JSON.stringify(repeatDays)
-        };
-        Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
-        ciPost('audio/save_ads_schedule', data, function(res) {
-            if(res?.status === 'ok') {
-                Swal.fire('✅ Berhasil!', 'Jadwal disimpan', 'success');
-                $('#modalAdsSchedule').modal('hide');
-                form[0].reset();
-                loadAdsSchedule();
-            } else {
-                Swal.fire('❌ Gagal!', res?.message || 'Error server', 'error');
             }
         });
     });
@@ -864,6 +1143,12 @@ function onYouTubeIframeAPIReady() {
             },
             'onStateChange': function(e) {
                 console.log('🎬 YouTube state:', e.data);
+                let btn = $('#btnMusicPlayPause');
+                if (e.data === YT.PlayerState.PLAYING) {
+                    btn.html('<i class="bi bi-pause-fill me-1"></i>Pause').removeClass('text-danger').addClass('text-success');
+                } else if (e.data === YT.PlayerState.PAUSED) {
+                    btn.html('<i class="bi bi-play-fill me-1"></i>Play').removeClass('text-success').addClass('text-danger');
+                }
                 if(e.data === YT.PlayerState.ENDED) {
                     let nextIndex = currentTrackIndex + 1;
                     if (nextIndex < musicPlaylist.length) {
@@ -887,8 +1172,62 @@ function playYoutube(videoId, title, showPopup = true) {
     ytPlayer.loadVideoById(videoId);
     ytPlayer.unMute();
     ytPlayer.playVideo();
+    isMusicManuallyPaused = false;
+    localStorage.setItem('music_manually_paused', 'false');
+    $('#btnMusicPlayPause').html('<i class="bi bi-pause-fill me-1"></i>Pause').removeClass('text-danger').addClass('text-success');
     if(showPopup) {
         Swal.fire({ icon: 'info', title: '🎵 Memutar Musik', text: title, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+    }
+}
+
+function togglePlayPauseMusic() {
+    if (!ytPlayer) return;
+    try {
+        let state = ytPlayer.getPlayerState();
+        let btn = $('#btnMusicPlayPause');
+        if (state === YT.PlayerState.PLAYING) {
+            ytPlayer.pauseVideo();
+            isMusicManuallyPaused = true;
+            localStorage.setItem('music_manually_paused', 'true');
+            btn.html('<i class="bi bi-play-fill me-1"></i>Play').removeClass('text-success').addClass('text-danger');
+            console.log("⏸️ Background music paused manually");
+        } else {
+            ytPlayer.playVideo();
+            ytPlayer.unMute();
+            isMusicManuallyPaused = false;
+            localStorage.setItem('music_manually_paused', 'false');
+            btn.html('<i class="bi bi-pause-fill me-1"></i>Pause').removeClass('text-danger').addClass('text-success');
+            console.log("▶️ Background music played manually");
+        }
+    } catch(e) {
+        console.warn("⚠️ Toggle play/pause error:", e);
+    }
+}
+
+function stopMusicPlayback() {
+    if (!ytPlayer) return;
+    try {
+        ytPlayer.stopVideo();
+        isMusicManuallyPaused = true;
+        localStorage.setItem('music_manually_paused', 'true');
+        $('#btnMusicPlayPause').html('<i class="bi bi-play-fill me-1"></i>Play').removeClass('text-success').addClass('text-danger');
+        console.log("⏹️ Background music stopped");
+    } catch(e) {
+        console.warn("⚠️ Stop music error:", e);
+    }
+}
+
+function restartPlaylist() {
+    if (!ytPlayer) return;
+    try {
+        currentTrackIndex = -1;
+        ytPlayer.stopVideo();
+        if (musicPlaylist.length > 0) {
+            playYoutubeByIndex(0);
+        }
+        console.log("🔄 Playlist restarted from beginning");
+    } catch(e) {
+        console.warn("⚠️ Restart playlist error:", e);
     }
 }
 
@@ -911,7 +1250,7 @@ function updateAnnouncerPreview() {
 function addPrayerAnnounce() {
     Swal.fire({
         title: '🕌 Siarkan Pengumuman Sholat?',
-        html: 'Pesan:<br><em>"Kepada Bapak/Ibu penumpang, bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasi."</em>',
+        html: 'Pesan:<br><em>"Kepada Bapak/Ibu penumpang, bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih."</em>',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: '✅ Ya, Siarkan',
@@ -919,9 +1258,9 @@ function addPrayerAnnounce() {
     }).then(r => {
         if(r.isConfirmed) {
             Swal.fire({title: 'Mengirim...', didOpen: () => Swal.showLoading()});
-            let text = "Kepada seluruh penumpang, waktu sholat telah tiba. " +
-                      "Silakan melaksanakan sholat  di masjid lantai 1 area terminal. " +
-                      "Terima kasih.";
+            let text_id = "Kepada Bapak/Ibu penumpang, bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.";
+            let text_en = "To all passengers, for those who wish to perform the prayer, a comfortable mosque facility is available on the 1st floor of the terminal. Let us remain diligent in our prayers during your journey. Thank you.";
+            let text = text_id + " | " + text_en;
             ciPost('audio/add_prayer_announce', {text: text, ...getCsrfData()}, function(res) {
                 if(res?.status === 'ok') {
                     Swal.fire('✅ Berhasil!', 'Pengumuman sholat masuk queue', 'success');
@@ -939,9 +1278,17 @@ function loadMusicList() {
         if(musicPlaylist.length > 0) {
             musicPlaylist.forEach((m, index) => {
                 let vId = extractVideoId(m.youtube_url);
-                html += `<div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 border-0" id="track-${index}" onclick="playYoutubeByIndex(${index})">
-                    <div class="text-truncate small"><i class="bi bi-music-note-beamed me-2"></i>${m.title || 'Untitled'}</div>
-                    <i class="bi bi-play-fill text-success"></i></div>`;
+                html += `<div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 border-0" id="track-${index}" onclick="playYoutubeByIndex(${index})" style="border-radius: 8px; margin-bottom: 4px;">
+                    <div class="text-truncate small" style="max-width: 80%; cursor: pointer;">
+                        <i class="bi bi-music-note-beamed me-2"></i>${m.title || 'Untitled'}
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-play-fill text-success" style="font-size: 1.1rem; cursor: pointer;"></i>
+                        <button type="button" class="btn btn-sm btn-outline-danger border-0 p-0 px-1" onclick="event.stopPropagation(); deleteMusic(${m.id})" title="Hapus dari Playlist" style="line-height: 1;">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                </div>`;
             });
         } else {
             html = '<div class="p-2 text-center text-muted small">Playlist Kosong</div>';
@@ -961,7 +1308,8 @@ function playYoutubeByIndex(index) {
 }
 
 function extractVideoId(url) {
-    let match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([^& \n]+)/);
+    if (!url) return null;
+    let match = url.trim().match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/ ]{11})/i);
     return (match && match[1]) ? match[1] : null;
 }
 
@@ -973,87 +1321,270 @@ function deleteMusic(id) {
     });
 }
 
-function stopAllAudio() {
-    if (ytPlayer?.stopVideo) ytPlayer.stopVideo();
+function stopAllAudio(showNotice = false, manual = false) {
+    if (ytPlayer?.pauseVideo) ytPlayer.pauseVideo();
     if (ytPlayer?.mute) ytPlayer.mute();
     if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
+
+    if (manual) {
+        isMusicManuallyPaused = true;
+        isMusicPausedByQueue = false;
+        localStorage.setItem('music_manually_paused', 'true');
+    }
+    const musicBtn = $('#btnMusicPlayPause');
+    musicBtn.html('<i class="bi bi-play-fill me-1"></i>Play').removeClass('text-success').addClass('text-danger');
+
+    // Setelah menghentikan audio, izinkan aksi baru pada queue
+    isProcessingQueue = false;
+    audioMutex = false;
+
+    if (showNotice) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Suara dihentikan',
+            text: 'Audio dihentikan. Tekan Play untuk menghidupkan kembali.',
+            timer: 2200,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+    }
 }
 
 function fetchAndPlayPending() {
-    if (isProcessingQueue || audioMutex) { console.log('⏳ Queue sedang diproses, tunggu...'); return; }
+    if (isQueueManuallyStopped) {
+        console.log('⏹️ Queue dihentikan manual, tidak ada processing');
+        return;
+    }
+
+    if (audioMutex) {
+        console.log('⏳ Queue sedang dimuat, tunggu...');
+        return;
+    }
+
+    if (isProcessingQueue) {
+        console.log('⏳ Audio masih diproses, tidak akan lanjut ke item berikutnya.');
+        return;
+    }
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking) {
+        console.log('⏳ TTS sedang berbicara, tunggu sampai selesai.');
+        return;
+    }
+
+    if (currentSpeech) {
+        console.log('⏳ TTS aktif, tunggu sampai selesai.');
+        return;
+    }
+
     audioMutex = true;
     ciGet('audio/get_next_audio', function(res) {
         audioMutex = false;
         if (!res || !res.id || res.status !== 'pending') {
-            if (!isProcessingQueue) { resumeYoutube(); }
+            if (!isProcessingQueue) { 
+                isMusicPausedByQueue = false;
+                resumeYoutube(); 
+            }
             return;
         }
         console.log("🎯 PLAY QUEUE:", res.id, res.type);
         isProcessingQueue = true;
-        stopAllAudio();
+        currentPlayingAudioId = res.id;
+        isMusicPausedByQueue = true;
+        stopAllAudio(false, false);
         hardPauseYoutube();
         setTimeout(() => { playQueueItemSequential(res); }, 800);
+    }).always(function() {
+        audioMutex = false;
     });
 }
 
 function hardPauseYoutube() {
     if (!ytPlayer) return;
-    try { ytPlayer.pauseVideo(); ytPlayer.mute(); console.log('⏸️ YouTube paused (safe)'); } catch(e) {}
+    try {
+        ytPlayer.pauseVideo();
+        ytPlayer.mute();
+        console.log('⏸️ YouTube paused (safe) - lanjutkan dari sini saat queue selesai');
+    } catch(e) {}
 }
 
 function resumeYoutube() {
-    if (isProcessingQueue || audioMutex) { console.log('⏳ Queue aktif, YouTube tetap pause'); return; }
+    if (typeof isMusicManuallyPaused !== 'undefined' && isMusicManuallyPaused) {
+        console.log('⏸️ YouTube tetap pause karena dimatikan manual oleh operator');
+        return;
+    }
+    if (isMusicPausedByQueue) {
+        console.log('⏳ Antrian masih diproses, YouTube tetap pause');
+        return;
+    }
+    if (isProcessingQueue || audioMutex) {
+        console.log('⏳ Queue aktif, YouTube tetap pause');
+        return;
+    }
+    // Cek: jangan resume jika TTS masih berbicara
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window && window.speechSynthesis.speaking) {
+        console.log('⏳ TTS masih berbicara, YouTube tetap pause');
+        return;
+    }
     if (!ytPlayer) return;
     try {
         if (typeof ytPlayer.unMute === 'function') { ytPlayer.unMute(); }
         if (typeof ytPlayer.setVolume === 'function') { ytPlayer.setVolume(100); }
         if (typeof ytPlayer.playVideo === 'function') { ytPlayer.playVideo(); }
-        console.log('🔊 YouTube resumed');
+        isMusicPausedByQueue = false;
+        console.log('▶️ YouTube melanjutkan dari posisi sebelumnya');
     } catch(e) { console.warn('⚠️ Resume YouTube error:', e); }
 }
 
 function playQueueItemSequential(item) {
     console.log("🔊 MEMULAI:", item.type, "ID:", item.id);
+    currentPlayingAudioId = item.id;
     let cleanText = item.text.replace(/<[^>]*>/g, '').trim();
     if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
-    speakTextSequential(cleanText, function() {
+
+    const resetBlocked = function() {
+        console.warn("⚠️ TTS Blocked by browser, resetting to pending:", item.id);
+        ciGet('audio/replay_queue_item/' + item.id, function() {
+            isProcessingQueue = false;
+        });
+    };
+
+    const finishQueue = function() {
         console.log("✅ TTS Selesai, mark as done:", item.id);
-        markAsDone(item.id);
+        markAsDone(item.id, false);
+        currentPlayingAudioId = null;
         isProcessingQueue = false;
         setTimeout(() => { if (!isProcessingQueue) { fetchAndPlayPending(); } }, 1500);
-    });
+    };
+
+    let parts = cleanText.split('|').map(p => p.trim());
+    if (parts.length > 1) {
+        setTimeout(() => {
+            speakTextSequential(parts[0], 'id-ID', function(err) {
+                if (err === 'not-allowed') { resetBlocked(); return; }
+                setTimeout(() => {
+                    speakTextSequential(parts[1], 'en-US', function(err2) {
+                        if (err2 === 'not-allowed') { resetBlocked(); return; }
+                        finishQueue();
+                    });
+                }, 1500);
+            });
+        }, 1500);
+    } else {
+        setTimeout(() => {
+            speakTextSequential(cleanText, 'id-ID', function(err) {
+                if (err === 'not-allowed') { resetBlocked(); return; }
+                finishQueue();
+            });
+        }, 1500);
+    }
 }
 
-function speakTextSequential(text, onComplete) {
+function speakTextSequential(text, langCode, onComplete) {
+    if (typeof langCode === 'function') {
+        onComplete = langCode;
+        langCode = 'id-ID';
+    }
+    langCode = langCode || 'id-ID';
+
     if (!('speechSynthesis' in window)) { console.warn('⚠️ TTS not supported'); if (onComplete) onComplete(); return; }
+    
+    let isFinished = false;
+    const finish = function(errorName = null) {
+        if (isFinished) return;
+        isFinished = true;
+        console.log('🔊 TTS finished callback');
+        if (onComplete) onComplete(errorName);
+    };
+
+    // Global fallback timeout: no matter what happens, finish must be called!
+    let estimatedMs = Math.max(4000, (text.length / 10) * 1000 + 4000);
+    let globalTimeout = setTimeout(() => {
+        if (!isFinished) {
+            console.warn('⚠️ TTS global timeout fallback triggered!');
+            window.speechSynthesis.cancel();
+            finish();
+        }
+    }, estimatedMs);
+
     window.speechSynthesis.cancel();
     let voices = window.speechSynthesis.getVoices();
+    
     if (voices.length === 0) {
-        window.speechSynthesis.onvoiceschanged = function() { startSpeaking(); };
+        let voiceTimeout = setTimeout(() => {
+            console.warn('⚠️ Voice load timeout, speaking with default native...');
+            startSpeaking(true);
+        }, 1000);
+        
+        window.speechSynthesis.onvoiceschanged = function() {
+            window.speechSynthesis.onvoiceschanged = null;
+            clearTimeout(voiceTimeout);
+            voices = window.speechSynthesis.getVoices();
+            startSpeaking();
+        };
         return;
     }
+    
     startSpeaking();
-    function startSpeaking() {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'id-ID';
-        utterance.rate = 0.9;
-        utterance.pitch = 1.0;
-        const idVoice = voices.find(v => v.lang.includes('id') || v.name.toLowerCase().includes('indonesian'));
-        if (idVoice) utterance.voice = idVoice;
-        let isFinished = false;
-        const finish = function() {
-            if (isFinished) return;
-            isFinished = true;
-            console.log('🔊 TTS finished callback');
-            if (onComplete) onComplete();
-        };
-        utterance.onend = finish;
-        utterance.onerror = function(e) { console.error('❌ TTS Error:', e.error); finish(); };
-        let estimatedMs = Math.max(3000, (text.length / 10) * 1000 + 3000);
-        setTimeout(() => { if (!isFinished) { console.warn('⚠️ TTS timeout fallback'); finish(); } }, estimatedMs);
-        window.speechSynthesis.speak(utterance);
-        currentSpeech = utterance;
-        console.log('🗣️ Speaking:', text.substring(0, 40) + '...');
+    
+    function startSpeaking(useFallbackVoice = false) {
+        try {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = langCode;
+            if (langCode.substring(0, 2).toLowerCase() === 'en') {
+                utterance.rate = ttsEnRate;
+                utterance.pitch = ttsEnPitch;
+            } else {
+                utterance.rate = ttsRate;
+                utterance.pitch = ttsPitch;
+            }
+            
+            let targetVoice = null;
+            if (!useFallbackVoice && voices && voices.length > 0) {
+                if (langCode === 'id-ID' && selectedVoiceName) {
+                    targetVoice = voices.find(v => v.name === selectedVoiceName);
+                } else if (langCode.substring(0, 2).toLowerCase() === 'en' && selectedEnVoiceName) {
+                    targetVoice = voices.find(v => v.name === selectedEnVoiceName);
+                }
+                if (!targetVoice) {
+                    targetVoice = voices.find(v => v.lang.toLowerCase().includes(langCode.substring(0, 2).toLowerCase()) || v.name.toLowerCase().includes(langCode === 'id-ID' ? 'indonesian' : 'english'));
+                }
+            }
+            if (targetVoice) {
+                utterance.voice = targetVoice;
+            }
+            
+            utterance.onend = function() {
+                clearTimeout(globalTimeout);
+                currentSpeech = null;
+                finish();
+            };
+            
+            utterance.onerror = function(e) { 
+                console.error('❌ TTS Error:', e.error); 
+                currentSpeech = null;
+                if (e.error === 'not-allowed') {
+                    $('#audioBlockedAlert').removeClass('d-none');
+                    clearTimeout(globalTimeout);
+                    finish(e.error);
+                } else if (!useFallbackVoice && targetVoice) {
+                    console.warn('⚠️ Selected voice failed, retrying with default native voice...');
+                    startSpeaking(true);
+                } else {
+                    clearTimeout(globalTimeout);
+                    finish();
+                }
+            };
+            
+            window.speechSynthesis.speak(utterance);
+            currentSpeech = utterance;
+            console.log('🗣️ Speaking:', text.substring(0, 40) + '...');
+        } catch (err) {
+            console.error('❌ startSpeaking Exception:', err);
+            currentSpeech = null;
+            clearTimeout(globalTimeout);
+            finish();
+        }
     }
 }
 
@@ -1076,21 +1607,69 @@ function playQueueItem(item, priority) {
     killYoutubeAudio();
     let ttsText = item.text.replace(/<[^>]*>/g, '');
     window.speechSynthesis.cancel();
-    speakText(ttsText, function() {
+
+    const finishPlay = function() {
         console.log("✅ SELESAI:", item.type);
         markAsDone(item.id);
         isPlayingQueue = false;
         audioLock = false;
         currentPriority = 0;
         setTimeout(() => { resumeYoutube(); }, 2000);
-    });
+    };
+
+    let parts = ttsText.split('|').map(p => p.trim());
+    if (parts.length > 1) {
+        speakText(parts[0], 'id-ID', function() {
+            speakText(parts[1], 'en-US', function() {
+                finishPlay();
+            });
+        });
+    } else {
+        speakText(ttsText, 'id-ID', function() {
+            finishPlay();
+        });
+    }
 }
 
 function killYoutubeAudio() {
     try { if (ytPlayer) { ytPlayer.pauseVideo(); ytPlayer.mute(); } } catch(e) {}
 }
 
-function getNextAudio() { fetchAndPlayPending(); }
+function getNextAudio() {
+    if (audioMutex) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Sedang memuat...',
+            text: 'Tunggu dulu sebelum memutar item berikutnya.',
+            timer: 1600,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        });
+        return;
+    }
+
+    if (isProcessingQueue && currentPlayingAudioId) {
+        Swal.fire({
+            title: 'Ingin lanjut ke audio berikutnya?',
+            text: 'Audio saat ini akan dihentikan dan ditandai selesai.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, lanjutkan',
+            cancelButtonText: 'Tidak'
+        }).then(result => {
+            if (!result.isConfirmed) return;
+            stopAllAudio(false);
+            const activeId = currentPlayingAudioId;
+            markAsDone(activeId, false, function() {
+                fetchAndPlayPending();
+            });
+        });
+        return;
+    }
+
+    fetchAndPlayPending();
+}
 
 function playSpecific(id) {
     ciGet('audio/get_next_audio', function(res) {
@@ -1098,9 +1677,50 @@ function playSpecific(id) {
     });
 }
 
-function markAsDone(id) {
+function markAsDone(id, showToast = true, callback = null) {
     ciGet('audio/done_audio/' + id, function(res) {
-        if(res?.status === 'done') { refreshQueue(); Swal.fire({icon: 'success', title: 'Selesai!', timer: 1000, showConfirmButton: false}); }
+        if(res?.status === 'done') {
+            refreshQueue();
+            if (currentPlayingAudioId == id) {
+                currentPlayingAudioId = null;
+            }
+            if (showToast) {
+                Swal.fire({icon: 'success', title: 'Selesai!', timer: 1000, showConfirmButton: false});
+            }
+            if (typeof callback === 'function') {
+                callback();
+            }
+        } else if (typeof callback === 'function') {
+            callback();
+        }
+    });
+}
+
+function skipCurrentAudio() {
+    if (!currentPlayingAudioId) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Tidak ada audio aktif',
+            text: 'Belum ada item berstatus playing untuk dilewati.',
+            timer: 1800,
+            showConfirmButton: false
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Lewati audio ini?',
+        text: 'Suara akan dihentikan dan item yang sedang playing ditandai selesai.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Lewati',
+        cancelButtonText: 'Batal'
+    }).then(r => {
+        if (r.isConfirmed) {
+            stopAllAudio(false);
+            isProcessingQueue = false;
+            markAsDone(currentPlayingAudioId, true);
+        }
     });
 }
 
@@ -1149,14 +1769,22 @@ function refreshQueue() {
                         btn = `<span class="text-muted small me-1"><i class="bi bi-check-circle-fill"></i></span>`;
                     }
                 }
-                let displayText = item.text.length > 80 ? item.text.substring(0,80)+'...' : item.text;
+                let displayText = '';
+                if (item.text.includes('|')) {
+                    let parts = item.text.split('|').map(p => p.trim());
+                    displayText = `<div class="small"><span class="badge bg-secondary me-1 text-uppercase" style="font-size: 0.65rem;">ID</span> ${parts[0]}</div>
+                                   <div class="small mt-1 text-muted"><span class="badge bg-light text-dark border me-1 text-uppercase" style="font-size: 0.65rem;">EN</span> ${parts[1]}</div>`;
+                } else {
+                    let txt = item.text.length > 80 ? item.text.substring(0,80)+'...' : item.text;
+                    displayText = `<p class="mb-1 mt-2 small text-dark">${txt}</p>`;
+                }
                 html += `<div class="queue-item ${cls} rounded">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1 me-2">
                             <span class="badge ${badge} badge-type">${icon} ${item.type}</span>
                             <strong class="ms-2 small">#${item.id}</strong>
                             ${item.priority <= 2 ? '<span class="badge bg-danger ms-1" style="font-size:0.7em">PRIORITAS</span>' : ''}
-                            <p class="mb-1 mt-2 small text-dark">${displayText}</p>
+                            <div class="mt-2 mb-1">${displayText}</div>
                             <small class="text-muted" style="font-size:0.75em">Status: ${item.status}</small>
                         </div>
                         <div class="flex-shrink-0">${btn}</div>
@@ -1171,21 +1799,109 @@ function refreshQueue() {
         if(data && data.length > 0) {
             let playing = data.find(x => x.status === 'playing');
             if(playing) {
-                $('#currentAudio').html(`<span class="text-primary">${playing.text.replace(/<[^>]*>/g, '').substring(0, 70)}${playing.text.length > 70 ? '...' : ''}</span>`);
+                currentPlayingAudioId = playing.id;
+                let cleanText = playing.text.replace(/<[^>]*>/g, '');
+                if (cleanText.includes('|')) {
+                    let parts = cleanText.split('|').map(p => p.trim());
+                    $('#currentAudio').html(`<div class="text-primary font-monospace small"><span class="badge bg-primary text-white me-1">ID</span> ${parts[0]}</div>
+                                             <div class="text-secondary font-monospace small mt-1"><span class="badge bg-secondary text-white me-1">EN</span> ${parts[1]}</div>`);
+                } else {
+                    $('#currentAudio').html(`<span class="text-primary">${cleanText.substring(0, 70)}${cleanText.length > 70 ? '...' : ''}</span>`);
+                }
+            } else {
+                currentPlayingAudioId = null;
+                $('#currentAudio').html('<span class="text-muted">Tidak ada audio yang sedang diputar</span>');
             }
+        } else {
+            currentPlayingAudioId = null;
+            $('#currentAudio').html('<span class="text-muted">Tidak ada audio yang sedang diputar</span>');
         }
     });
 }
 
-function speakText(text, callback) {
+function stopQueue() {
+    isQueueManuallyStopped = true;
+    Swal.fire({
+        icon: 'warning',
+        title: 'Antrian Dihentikan',
+        text: 'Queue audio telah dihentikan. Audio tidak akan dimainkan secara otomatis sampai Anda tekan tombol Lanjutkan.',
+        toast: true,
+        position: 'top-end',
+        timer: 3000,
+        showConfirmButton: false
+    });
+    console.log('⏹️ Queue audio dihentikan manual');
+}
+
+function resumeQueue() {
+    isQueueManuallyStopped = false;
+    isMusicPausedByQueue = true;
+    hardPauseYoutube();
+    Swal.fire({
+        icon: 'success',
+        title: 'Antrian Dilanjutkan',
+        text: 'Queue audio dilanjutkan. Musik akan resume setelah antrian selesai.',
+        toast: true,
+        position: 'top-end',
+        timer: 3000,
+        showConfirmButton: false
+    });
+    fetchAndPlayPending();
+    console.log('▶️ Queue audio dilanjutkan - musik tetap pause');
+}
+
+function clearQueue() {
+    Swal.fire({
+        title: 'Bersihkan Semua Antrian?',
+        text: 'Tindakan ini akan menghapus SEMUA item di queue (kecuali yang sedang playing)',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Bersihkan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#dc3545'
+    }).then(r => {
+        if (r.isConfirmed) {
+            Swal.fire({title: 'Mengirim...', didOpen: () => Swal.showLoading()});
+            ciGet('audio/clear_queue', function(res) {
+                if(res?.status === 'ok') {
+                    Swal.fire('✅ Berhasil!', 'Queue telah dibersihkan', 'success');
+                    refreshQueue();
+                } else {
+                    Swal.fire('❌ Gagal!', 'Gagal membersihkan queue', 'error');
+                }
+            });
+        }
+    });
+}
+
+function speakText(text, langCode, callback) {
+    if (typeof langCode === 'function') {
+        callback = langCode;
+        langCode = 'id-ID';
+    }
+    langCode = langCode || 'id-ID';
+
     if (!('speechSynthesis' in window)) return;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'id-ID';
-    utterance.rate = 0.85;
-    utterance.pitch = 1;
+    utterance.lang = langCode;
+    if (langCode.substring(0, 2).toLowerCase() === 'en') {
+        utterance.rate = ttsEnRate;
+        utterance.pitch = ttsEnPitch;
+    } else {
+        utterance.rate = ttsRate;
+        utterance.pitch = ttsPitch;
+    }
     let voices = speechSynthesis.getVoices();
-    let voice = voices.find(v => v.lang === 'id-ID');
-    if (voice) utterance.voice = voice;
+    let targetVoice = null;
+    if (langCode === 'id-ID' && selectedVoiceName) {
+        targetVoice = voices.find(v => v.name === selectedVoiceName);
+    } else if (langCode.substring(0, 2).toLowerCase() === 'en' && selectedEnVoiceName) {
+        targetVoice = voices.find(v => v.name === selectedEnVoiceName);
+    }
+    if (!targetVoice) {
+        targetVoice = voices.find(v => v.lang.toLowerCase().includes(langCode.substring(0, 2).toLowerCase()) || v.name.toLowerCase().includes(langCode === 'id-ID' ? 'indonesian' : 'english'));
+    }
+    if (targetVoice) utterance.voice = targetVoice;
     let finished = false;
     utterance.onend = function() {
         if (finished) return;

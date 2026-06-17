@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - AUDIO</title>
+    <link rel="shortcut icon" href="<?= base_url('assets/images/logo_pulo_gebang.jpg') ?>" type="image/jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -30,10 +31,8 @@
     <div class="w-full max-w-md">
         <div class="glass-card shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden">
             <div class="p-8 pb-0 text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/50">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                    </svg>
+                <div class="inline-flex items-center justify-center w-24 h-24 mb-4 rounded-3xl overflow-hidden shadow-lg border border-slate-100 bg-white">
+                    <img src="<?= base_url('assets/images/logo_pulo_gebang.jpg') ?>" alt="Logo TTPG" class="w-full h-full object-cover">
                 </div>
                 <h1 class="text-2xl font-bold text-slate-800 tracking-tight">TTPG AUDIO</h1>
                 <p class="text-slate-500 text-sm mt-1">Sistem Management Announcer</p>

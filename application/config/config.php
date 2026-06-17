@@ -328,7 +328,7 @@ $config['cache_query_string'] = FALSE;
 | https://codeigniter.com/userguide3/libraries/encryption.html
 |
 */
-$config['encryption_key'] = 'kode_acak_aman';
+$config['encryption_key'] = getenv('ENCRYPTION_KEY') ?: 'kode_acak_aman';
 
 /*
 |--------------------------------------------------------------------------

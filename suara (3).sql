@@ -74,6 +74,22 @@ CREATE TABLE `ads_schedules` (
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `activity_logs`
+--
+
+CREATE TABLE `activity_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `username` varchar(100) DEFAULT NULL,
+  `action` varchar(255) NOT NULL,
+  `details` text DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `audio_queue`
 --
 
@@ -275,7 +291,7 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `name` varchar(100) NOT NULL,
-  `role` enum('admin','teknisi') NOT NULL DEFAULT 'teknisi',
+  `role` enum('admin','teknisi','petugas_masuk','petugas_keluar','petugas_kedatangan','petugas_keberangkatan','petugas_pengendapan') NOT NULL DEFAULT 'teknisi',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -284,7 +300,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `name`, `role`, `created_at`) VALUES
-(1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', 'Admin Utama', 'admin', '2025-11-11 07:57:58');
+(1, 'admin', '$2y$10$UkDdd5KoiVDIQsLaCMTX0elkxymVToAs9k7lGWXB.BOIQcys8f2GW', 'Admin Utama', 'admin', '2025-11-11 07:57:58'),
+(2, 'user_masuk', '$2y$10$tMw8q.65TB/tKFJgYpa/pu7uxcczu1E5EFQAtxll4lcX6l6MCkP1y', 'Petugas Masuk', 'petugas_masuk', '2026-06-02 00:00:00'),
+(3, 'user_keluar', '$2y$10$BvuGo4M8AtpK2SY1xozuMeSCWkTD9UlF31MHSiPWeWlEqhRZvp/8y', 'Petugas Keluar', 'petugas_keluar', '2026-06-02 00:00:00'),
+(4, 'user_kedatangan', '$2y$10$u4Y6GhpqeX4OP2kAKggfsuU/3rJyJ/vVByX4FEc8dHUkmgkOMdhiS', 'Petugas Kedatangan', 'petugas_kedatangan', '2026-06-02 00:00:00'),
+(5, 'user_keberangkatan', '$2y$10$d4uzJQYK5/4VmQOdeI0U4OwR06wdJl.symkk/3cjFQW3StcfN7T1C', 'Petugas Keberangkatan', 'petugas_keberangkatan', '2026-06-02 00:00:00'),
+(6, 'user_pengendapan', '$2y$10$yJxSof9Vquxy4km1pXSmvuR6N8QOlv2EAP45Blsm2fE4xxTxRqc46', 'Petugas Pengendapan', 'petugas_pengendapan', '2026-06-02 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -329,18 +350,30 @@ ALTER TABLE `ads_schedules`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `activity_logs`
+--
+ALTER TABLE `activity_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_user_action` (`user_id`,`action`),
+  ADD KEY `idx_created_at` (`created_at`);
+
+--
 -- Indeks untuk tabel `audio_queue`
 --
 ALTER TABLE `audio_queue`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_status_priority` (`status`,`priority`),
-  ADD KEY `idx_scheduled` (`scheduled_at`,`status`);
+  ADD KEY `idx_scheduled` (`scheduled_at`,`status`),
+  ADD KEY `idx_created_at` (`created_at`),
+  ADD KEY `idx_type_area` (`type`,`area`);
 
 --
 -- Indeks untuk tabel `bus_history`
 --
 ALTER TABLE `bus_history`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_waktu_masuk` (`waktu_masuk`),
+  ADD KEY `idx_bus_area` (`bus_id`,`area`);
 
 --
 -- Indeks untuk tabel `lost_found`
@@ -362,6 +395,9 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`);
 
+ALTER TABLE `users`
+  MODIFY `role` enum('admin','teknisi','petugas_masuk','petugas_keluar','petugas_kedatangan','petugas_keberangkatan','petugas_pengendapan') NOT NULL DEFAULT 'teknisi';
+
 --
 -- Indeks untuk tabel `youtube_playlist`
 --
@@ -372,6 +408,12 @@ ALTER TABLE `youtube_playlist`
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
 --
+
+--
+-- AUTO_INCREMENT untuk tabel `activity_logs`
+--
+ALTER TABLE `activity_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `ads_schedule`
@@ -413,7 +455,7 @@ ALTER TABLE `signages`
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `youtube_playlist`

@@ -43,7 +43,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
 const BASE_URL = "<?= base_url(); ?>";
@@ -56,22 +55,27 @@ function loadBus(){
             html = '<div class="text-center text-muted mt-5">Tidak ada bus di dalam terminal.</div>';
         } else {
             res.forEach(b => {
-                // TAMPILKAN SEMUA AREA kecuali yang sudah 'berangkat'
+                // TAMPILKAN AREA KEDATANGAN, PENGENDAPAN, KEBERANGKATAN, DAN MASUK (kecuali 'berangkat')
                 if(b.area !== 'berangkat' && b.plat_nomor) {
                     
                     let badgeColor = '';
                     let areaName = '';
+                    let isBypass = (b.area === 'masuk') ? 1 : 0;
+                    let customStyle = (b.area === 'masuk') 
+                        ? 'opacity: 0.75; border-left: 5px solid #ffc107 !important; background-color: #fffdf5;' 
+                        : 'border-left: 5px solid #28a745 !important;';
 
                     switch(b.area) {
                         case 'pengendapan': badgeColor = 'bg-dark'; areaName = 'PENGENDAPAN'; break;
                         case 'keberangkatan': badgeColor = 'bg-primary'; areaName = 'KEBERANGKATAN'; break;
                         case 'kedatangan': badgeColor = 'bg-info'; areaName = 'KEDATANGAN'; break;
+                        case 'masuk': badgeColor = 'bg-warning text-dark'; areaName = 'MASUK (BELUM PELAYANAN)'; break;
                         default: badgeColor = 'bg-success'; areaName = 'MASUK';
                     }
 
                     html += `
-                        <div class="card mb-2 shadow-sm border-0" style="cursor:pointer" 
-                             onclick="pilih(${b.id}, '${b.plat_nomor}', '${b.nama_po ?? '-'}', '${b.tujuan ?? '-'}')">
+                        <div class="card mb-2 shadow-sm border-0" style="cursor:pointer; ${customStyle}" 
+                             onclick="pilih(${b.id}, '${b.plat_nomor}', '${b.nama_po ?? '-'}', '${b.tujuan ?? '-'}', ${isBypass})">
                             <div class="card-body p-2 d-flex justify-content-between align-items-center">
                                 <div>
                                     <strong class="text-dark" style="font-size: 1.2rem;">${b.plat_nomor}</strong><br>
@@ -79,7 +83,7 @@ function loadBus(){
                                 </div>
                                 <div class="text-end">
                                     <span class="badge ${badgeColor} text-white">${areaName}</span>
-                                    <div class="small text-danger fw-bold mt-1">${b.tujuan}</div>
+                                    <div class="small text-danger fw-bold mt-1">${b.tujuan || '-'}</div>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +95,19 @@ function loadBus(){
     }, 'json');
 }
 
-function pilih(id, nopol, po, tujuan){
+function pilih(id, nopol, po, tujuan, isBypass){
+    if (isBypass) {
+        Swal.fire({
+            title: 'Bypass Dicegah!',
+            text: 'Bus ' + nopol + ' berstatus MASUK dan belum melewati area pelayanan (Kedatangan / Pengendapan / Keberangkatan). Silakan proses bus di area pelayanan terlebih dahulu!',
+            icon: 'warning',
+            confirmButtonColor: '#dc3545'
+        });
+        $('#id').val('');
+        $('#nopol').val('');
+        $('#info_bus').html('-');
+        return;
+    }
     $('#id').val(id);
     $('#nopol').val(nopol);
     $('#info_bus').html(`<strong>${po}</strong><br><span class="text-primary">${tujuan}</span>`);
@@ -128,6 +144,8 @@ function simpan(){
                     $('#info_bus').html('-');
 
                     loadBus();
+                } else {
+                    Swal.fire('Gagal!', res.message, 'error');
                 }
             }, 'json');
 

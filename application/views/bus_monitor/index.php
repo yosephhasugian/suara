@@ -177,12 +177,13 @@ function kirimUpdate(id, tujuan, area){
         tujuan: tujuan,
         area: area
     }, function(res){
-
-        loadBus();
-
-        // reset input
-        $('input').val('');
-
+        if(res.status){
+            loadBus();
+            // reset input
+            $('input').val('');
+        } else {
+            alert(res.message);
+        }
     }, 'json');
 }
 

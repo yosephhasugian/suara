@@ -100,12 +100,25 @@
                                 </div>
                             </div>
 
+                            <!-- SIARKAN AUTOMATIS CHECKBOX -->
+                            <div class="col-md-12 mt-3">
+                                <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success p-3 border rounded bg-light">
+                                    <input type="checkbox" name="siarkan_audio" class="custom-control-input" id="siarkanAudio" value="1" checked>
+                                    <label class="custom-control-label font-weight-bold text-dark" for="siarkanAudio" style="cursor: pointer;">
+                                        📢 Siarkan Pengumuman Barang Temuan Otomatis ke Terminal
+                                    </label>
+                                    <small class="form-text text-muted text-xs mt-1">
+                                        Jika diaktifkan, sistem akan otomatis merancang teks pengumuman suara dan menambahkannya ke antrean siaran terminal secara real-time.
+                                    </small>
+                                </div>
+                            </div>
+
                         </div>
 
                         <!-- BUTTON -->
-                        <div class="text-right mt-3">
-                            <button class="btn btn-primary shadow">
-                                <i class="fas fa-save"></i> Simpan Data
+                        <div class="text-right mt-4">
+                            <button class="btn btn-primary shadow px-4">
+                                <i class="fas fa-save mr-1"></i>Simpan Data
                             </button>
                         </div>
 

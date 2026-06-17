@@ -24,29 +24,35 @@ public function index() {
 
     // ✅ GET: Next audio to play
     public function get_next_audio() {
+        // Reset stuck 'playing' items to 'pending' if they have been stuck for more than 60 seconds
+        $stuck_time = date('Y-m-d H:i:s', time() - 60);
+        $this->db->where('status', 'playing')
+                 ->where('updated_at <', $stuck_time)
+                 ->update('audio_queue', ['status' => 'pending']);
 
-    $row = $this->db->query("
-        SELECT * FROM audio_queue 
-        WHERE status = 'pending' 
-        ORDER BY priority ASC, id ASC 
-        LIMIT 1
-    ")->row();
+        // Mulai transaksi database untuk mendukung row locking (FOR UPDATE)
+        $this->db->trans_start();
 
-    if ($row) {
-        // 💣 LOCK manual (anti double ambil)
-        $this->db->where('id', $row->id);
-        $this->db->where('status', 'pending');
-        $updated = $this->db->update('audio_queue', ['status' => 'playing']);
+        // 💣 SELECT dengan FOR UPDATE untuk mengunci baris data secara eksklusif
+        $row = $this->db->query("
+            SELECT * FROM audio_queue 
+            WHERE status = 'pending' 
+            ORDER BY priority ASC, id ASC 
+            LIMIT 1
+            FOR UPDATE
+        ")->row();
 
-        // 🔥 kalau gagal update = sudah diambil proses lain
-        if (!$this->db->affected_rows()) {
-            echo json_encode(null);
-            return;
+        if ($row) {
+            // Update status menjadi playing di dalam transaksi yang sama
+            $this->db->where('id', $row->id);
+            $this->db->update('audio_queue', ['status' => 'playing']);
         }
-    }
 
-    echo json_encode($row);
-}
+        // Selesaikan transaksi database (Commit / Rollback)
+        $this->db->trans_complete();
+
+        echo json_encode($row);
+    }
 
     public function get_all_queue() {
     $queue = $this->Audio_model->get_all_queue();
@@ -58,13 +64,22 @@ public function index() {
 
     // ✅ POST: Tambah announcer manual
     public function add_announcer() {
-        $text = sprintf(
+        $penumpang = $this->input->post('penumpang', TRUE);
+        $po = $this->input->post('po', TRUE);
+        $jurusan = $this->input->post('jurusan', TRUE);
+        $pintu = $this->input->post('pintu', TRUE);
+
+        $text_id = sprintf(
             "Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama %s. Untuk penumpang bus %s tujuan %s, ditunggu kehadiran Anda di pintu %s, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.",
-            $this->input->post('penumpang', TRUE),
-            $this->input->post('po', TRUE),
-            $this->input->post('jurusan', TRUE),
-            $this->input->post('pintu', TRUE)
+            $penumpang, $po, $jurusan, $pintu
         );
+
+        $text_en = sprintf(
+            "Your attention please. This is a call for passenger %s. For passengers of bus %s bound for %s, please report to gate %s immediately, as your bus is about to depart. Thank you.",
+            $penumpang, $po, $jurusan, $pintu
+        );
+
+        $text = $text_id . " | " . $text_en;
         $id = $this->Audio_model->create_queue_item('announcer', $text, 2);
         $this->output->set_content_type('application/json')->set_output(json_encode(['status'=>'ok','id'=>$id]));
     }
@@ -74,6 +89,8 @@ public function index() {
 
     $nopol = $this->input->post('nopol', TRUE);
     $po    = $this->input->post('po', TRUE);
+    $target_area = $this->input->post('target_area', TRUE);
+    $tujuan = $this->input->post('tujuan', TRUE);
 
     if(!$nopol || !$po){
         echo json_encode([
@@ -83,38 +100,69 @@ public function index() {
         return;
     }
 
-    $text = "Perhatian. Bus $po dengan nomor polisi $nopol telah memasuki area terminal. Terima kasih.";
+    $nopol = $this->normalize_plat($nopol);
+
+    $area_text_id = "area terminal";
+    $area_text_en = "the terminal area";
+
+    if ($target_area === 'kedatangan') {
+        $area_text_id = "area kedatangan";
+        $area_text_en = "the arrival area";
+    } elseif ($target_area === 'pengendapan') {
+        $area_text_id = "area pengendapan";
+        $area_text_en = "the laying-over area";
+    } elseif ($target_area === 'keberangkatan') {
+        $area_text_id = "area keberangkatan";
+        $area_text_en = "the departure area";
+    }
+
+    $nopol_spelled = implode(' ', str_split(str_replace(' ', '', $nopol)));
+    $text_id = "Perhatian. Bus $po dengan nomor polisi $nopol_spelled telah memasuki $area_text_id. Terima kasih.";
+    $text_en = "Attention. Bus $po with license plate number $nopol_spelled has entered $area_text_en. Thank you.";
+    $text = $text_id . " | " . $text_en;
 
     $data = [
         'type' => 'bus',
         'text' => $text,
         'plat_nomor' => $nopol,
         'nama_po' => $po,
+        'tujuan' => $tujuan,
         'area' => 'masuk', // 🔥 WAJIB ADA
-        'status' => 'pending',
+        'status' => ($target_area === 'pengendapan' ? 'done' : 'pending'),
         'priority' => 3,
-        'created_at' => date('Y-m-d H:i:s')
+        'created_at' => date('Y-m-d H:i:s'),
+        'area_updated_at'=> date('Y-m-d H:i:s')
     ];
 
-    $insert = $this->db->insert('audio_queue', $data);
+    $this->db->trans_start();
 
-    if(!$insert){
+    $this->db->insert('audio_queue', $data);
+    $bus_id = $this->db->insert_id();
+
+    // 🔥 INSERT KE HISTORY (INI YANG KURANG DARI TADI)
+    $this->db->insert('bus_history', [
+        'bus_id' => $bus_id,
+        'area' => 'masuk',
+        'waktu_masuk' => date('Y-m-d H:i:s')
+    ]);
+
+    // Jika target_area diisi dan valid, lakukan update area secara langsung
+    if ($target_area && in_array($target_area, ['kedatangan', 'pengendapan', 'keberangkatan'])) {
+        $this->db->where('id', $bus_id)->update('audio_queue', [
+            'area' => $target_area,
+            'updated_at' => date('Y-m-d H:i:s'),
+            'area_updated_at' => date('Y-m-d H:i:s')
+        ]);
+    }
+
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === FALSE) {
         echo json_encode([
             'status' => 'error',
-            'db_error' => $this->db->error()
+            'message' => 'Database transaction failed'
         ]);
     } else {
-
-        // 🔥 AMBIL ID BUS
-        $bus_id = $this->db->insert_id();
-
-        // 🔥 INSERT KE HISTORY (INI YANG KURANG DARI TADI)
-        $this->db->insert('bus_history', [
-            'bus_id' => $bus_id,
-            'area' => 'masuk',
-            'waktu_masuk' => date('Y-m-d H:i:s')
-        ]);
-
         echo json_encode([
             'status'=>'ok'
         ]);
@@ -184,6 +232,12 @@ public function index() {
         $this->output->set_content_type('application/json')->set_output(json_encode($list));
     }
 
+    // ✅ GET: Hapus musik dari playlist
+    public function delete_music($id) {
+        $this->db->where('id', $id)->delete('youtube_playlist');
+        $this->output->set_content_type('application/json')->set_output(json_encode(['status' => 'ok']));
+    }
+
     // ✅ GET: Mark as done
     public function done_audio($id) {
         $this->Audio_model->update_status($id, 'done');
@@ -193,6 +247,12 @@ public function index() {
     // ✅ GET: Replay item
     public function replay_queue_item($id) {
         $this->Audio_model->replay_item($id);
+        $this->output->set_content_type('application/json')->set_output(json_encode(['status'=>'ok']));
+    }
+
+    // ✅ GET: Clear all pending queue items
+    public function clear_queue() {
+        $this->db->where('status', 'pending')->delete('audio_queue');
         $this->output->set_content_type('application/json')->set_output(json_encode(['status'=>'ok']));
     }
 
@@ -232,10 +292,13 @@ public function index() {
         echo "OK";
     }
 
-    // Helper: Extract YouTube ID
+    // Helper: Extract YouTube ID (Universal Support for watch, mobile, shorts, share links, embed)
     private function _extract_youtube_id($url) {
-        preg_match('/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([^& \n]+)/', $url, $matches);
-        return $matches[1] ?? null;
+        $url = trim($url);
+        if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/ ]{11})/i', $url, $matches)) {
+            return $matches[1];
+        }
+        return null;
     }
 
    public function get_ads_schedule() {
@@ -249,13 +312,13 @@ public function save_ads_schedule()
     $data = [
         'ad_title' => $this->input->post('ad_title'),
         'ad_text' => $this->input->post('ad_text'),
-        'duration' => $this->input->post('duration'),
         'interval_minutes' => $this->input->post('interval_minutes'),
         'start_date' => $this->input->post('start_date'),
         'end_date' => $this->input->post('end_date'),
         'start_time' => $this->input->post('start_time'),
         'end_time' => $this->input->post('end_time'),
         'repeat_days' => $this->input->post('repeat_days'),
+        'is_active' => 1,
         'created_at' => date('Y-m-d H:i:s')
     ];
 
@@ -273,5 +336,14 @@ public function update_last_played() {
     ]);
 
     echo json_encode(['status' => 'ok']);
+}
+
+private function normalize_plat($plat) {
+    $plat = strtoupper(trim($plat));
+    $plat_clean = str_replace(' ', '', $plat);
+    if (preg_match('/^([A-Z]{1,2})([0-9]{1,4})([A-Z]{1,3})$/', $plat_clean, $matches)) {
+        return $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];
+    }
+    return preg_replace('/\s+/', ' ', $plat);
 }
 }

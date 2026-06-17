@@ -9,7 +9,8 @@ class Dashboard extends CI_Controller {
 
         $this->load->model([
             'audio_model',
-            'user_model'
+            'user_model',
+            'Activity_model'
         ]);
 
         $this->load->helper('url');
@@ -32,50 +33,82 @@ class Dashboard extends CI_Controller {
         $today = date('Y-m-d');
 
         // =====================================================
-        // FLOW MOVEMENT HARIAN
+        // FLOW MOVEMENT HARIAN & REALTIME
         // =====================================================
+        $today_start = $today . ' 00:00:00';
+        $today_end   = $today . ' 23:59:59';
 
-        $count = $this->db->query("
-            SELECT 
-                SUM(CASE WHEN area='masuk' THEN 1 ELSE 0 END) as masuk,
+        // 1. TOTAL MASUK (All buses registered today)
+        $data['count_masuk'] = $this->db
+            ->where('type', 'bus')
+            ->where('created_at >=', $today_start)
+            ->where('created_at <=', $today_end)
+            ->count_all_results('audio_queue');
 
-                SUM(CASE WHEN area='kedatangan' THEN 1 ELSE 0 END) as kedatangan,
+        // 2. KEDATANGAN AKTIF (Buses currently in kedatangan area)
+        $data['count_kedatangan'] = $this->db
+            ->where('type', 'bus')
+            ->where('area', 'kedatangan')
+            ->where('created_at >=', $today_start)
+            ->where('created_at <=', $today_end)
+            ->count_all_results('audio_queue');
 
-                SUM(CASE WHEN area='pengendapan' THEN 1 ELSE 0 END) as pengendapan,
+        // 3. PENGENDAPAN AKTIF (Buses currently in pengendapan area)
+        $data['count_pengendapan'] = $this->db
+            ->where('type', 'bus')
+            ->where('area', 'pengendapan')
+            ->where('created_at >=', $today_start)
+            ->where('created_at <=', $today_end)
+            ->count_all_results('audio_queue');
 
-                SUM(CASE WHEN area='keberangkatan' THEN 1 ELSE 0 END) as keberangkatan,
+        // 4. KEBERANGKATAN AKTIF (Buses currently in keberangkatan area)
+        $data['count_keberangkatan'] = $this->db
+            ->where('type', 'bus')
+            ->where('area', 'keberangkatan')
+            ->where('created_at >=', $today_start)
+            ->where('created_at <=', $today_end)
+            ->count_all_results('audio_queue');
 
-                SUM(CASE WHEN area='berangkat' THEN 1 ELSE 0 END) as keluar
+        // 5. TOTAL KELUAR (Buses that have exited today)
+        $data['count_keluar'] = $this->db
+            ->where('type', 'bus')
+            ->where('area', 'berangkat')
+            ->where('area_updated_at >=', $today_start)
+            ->where('area_updated_at <=', $today_end)
+            ->count_all_results('audio_queue');
 
-            FROM bus_history
+        // 6. BUS AKTIF YANG MASIH DI DALAM TERMINAL
+        // Yaitu gabungan dari kedatangan, pengendapan, keberangkatan serta yang masuk tapi belum ada status lanjutannya (tetap berstatus 'masuk')
+        $count_active_masuk = $this->db
+            ->where('type', 'bus')
+            ->where('area', 'masuk')
+            ->where('created_at >=', $today_start)
+            ->where('created_at <=', $today_end)
+            ->count_all_results('audio_queue');
 
-            WHERE DATE(waktu_masuk) = '$today'
-        ")->row();
-
-        $data['count_masuk'] =
-            $count->masuk ?? 0;
-
-        $data['count_kedatangan'] =
-            $count->kedatangan ?? 0;
-
-        $data['count_pengendapan'] =
-            $count->pengendapan ?? 0;
-
-        $data['count_keberangkatan'] =
-            $count->keberangkatan ?? 0;
-
-        $data['count_keluar'] =
-            $count->keluar ?? 0;
+        $data['count_aktif'] = $count_active_masuk + $data['count_kedatangan'] + $data['count_pengendapan'] + $data['count_keberangkatan'];
 
         // =====================================================
         // STATUS AREA REALTIME
         // =====================================================
 
+        $capacities_raw = $this->db->get('area_capacities')->result();
+        $capacities = [];
+        foreach ($capacities_raw as $c) {
+            $capacities[$c->area] = $c->capacity;
+        }
+        $cap_kedatangan    = $capacities['kedatangan'] ?? 30;
+        $cap_pengendapan   = $capacities['pengendapan'] ?? 50;
+        $cap_keberangkatan = $capacities['keberangkatan'] ?? 28;
+
+        $data['kedatangan'] =
+            $this->get_area_status('kedatangan', $cap_kedatangan);
+
         $data['pengendapan'] =
-            $this->get_area_status('pengendapan', 50);
+            $this->get_area_status('pengendapan', $cap_pengendapan);
 
         $data['keberangkatan'] =
-            $this->get_area_status('keberangkatan', 28);
+            $this->get_area_status('keberangkatan', $cap_keberangkatan);
 
         // =====================================================
         // AKTIVITAS TERMINAL REALTIME
@@ -88,7 +121,8 @@ class Dashboard extends CI_Controller {
                 nama_po,
                 tujuan,
                 area,
-                area_updated_at
+                area_updated_at,
+                created_at
             ')
 
             ->from('audio_queue')
@@ -99,7 +133,8 @@ class Dashboard extends CI_Controller {
 
             ->where('plat_nomor !=', '')
 
-            ->where('DATE(created_at)', $today)
+            ->where('created_at >=', $today . ' 00:00:00')
+            ->where('created_at <=', $today . ' 23:59:59')
 
             ->order_by('area_updated_at', 'DESC')
 
@@ -136,7 +171,8 @@ class Dashboard extends CI_Controller {
 
             WHERE area = '$area'
 
-            AND DATE(waktu_masuk) = '$tanggal'
+            AND waktu_masuk >= '$tanggal 00:00:00'
+            AND waktu_masuk <= '$tanggal 23:59:59'
         ")->row()->total ?? 0;
     }
 
@@ -216,7 +252,8 @@ class Dashboard extends CI_Controller {
 
             ->where('area', $area)
 
-            ->where('DATE(created_at)', date('Y-m-d'))
+            ->where('created_at >=', date('Y-m-d 00:00:00'))
+            ->where('created_at <=', date('Y-m-d 23:59:59'))
 
             ->count_all_results('audio_queue');
     }
@@ -274,6 +311,42 @@ class Dashboard extends CI_Controller {
                 $color
 
         ];
+    }
+
+    // =====================================================
+    // MASTER DATA: KAPASITAS AREA
+    // =====================================================
+    public function kapasitas()
+    {
+        $data['title'] = 'Master Data Kapasitas Area';
+        $data['capacities'] = $this->db->order_by('id', 'ASC')->get('area_capacities')->result();
+        
+        $this->load->view('dashboard/kapasitas', $data);
+    }
+
+    public function update_capacity()
+    {
+        $area = $this->input->post('area');
+        $capacity = (int)$this->input->post('capacity');
+
+        if (!$area || $capacity <= 0) {
+            echo json_encode(['status' => false, 'message' => 'Input data tidak valid']);
+            return;
+        }
+
+        // Update capacity in DB
+        $updated = $this->db->where('area', $area)->update('area_capacities', ['capacity' => $capacity]);
+        
+        if ($updated) {
+            // Log this activity
+            $this->Activity_model->log('update_capacity', [
+                'area' => $area,
+                'capacity' => $capacity
+            ]);
+            echo json_encode(['status' => true]);
+        } else {
+            echo json_encode(['status' => false, 'message' => 'Gagal memperbarui database']);
+        }
     }
 
 }

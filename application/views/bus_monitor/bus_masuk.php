@@ -70,6 +70,43 @@
 
                 </div>
 
+                <!-- TUJUAN AKHIR -->
+                <div class="mb-3">
+
+                    <label class="fw-bold small text-muted">
+                        Tujuan Akhir
+                    </label>
+
+                    <input
+                        type="text"
+                        id="tujuan"
+                        name="tujuan"
+                        class="form-control"
+                        placeholder="Contoh: Surabaya / Solo"
+                    >
+
+                </div>
+
+                <!-- PILIH AREA/STATUS LANJUTAN -->
+                <div class="mb-3">
+
+                    <label class="fw-bold small text-muted">
+                        Status Lanjutan (Area Pelayanan)
+                    </label>
+
+                    <select
+                        id="target_area"
+                        name="target_area"
+                        class="form-control"
+                    >
+                        <option value="">-- Hanya Masuk --</option>
+                        <option value="kedatangan">Kedatangan</option>
+                        <option value="pengendapan">Pengendapan</option>
+                        <option value="keberangkatan">Keberangkatan</option>
+                    </select>
+
+                </div>
+
                 <!-- BUTTON -->
                 <button
                     type="submit"
@@ -87,11 +124,11 @@
     </div>
 
 </div>
+</div>
+</div>
 
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 
 // ===========================================
@@ -173,13 +210,13 @@ function loadBus()
                                     </div>
 
                                     <div>
-
-                                        <span class="badge bg-success text-white">
-
-                                            MASUK
-
-                                        </span>
-
+                                        ${(() => {
+                                            if (bus.area === 'kedatangan') return '<span class="badge bg-info text-white">KEDATANGAN</span>';
+                                            if (bus.area === 'pengendapan') return '<span class="badge bg-warning text-dark">PENGENDAPAN</span>';
+                                            if (bus.area === 'keberangkatan') return '<span class="badge bg-primary text-white">KEBERANGKATAN</span>';
+                                            if (bus.area === 'berangkat') return '<span class="badge bg-secondary text-white">BERANGKAT</span>';
+                                            return '<span class="badge bg-success text-white">MASUK</span>';
+                                        })()}
                                     </div>
 
                                 </div>
@@ -263,7 +300,11 @@ $('#plat_nomor').on('keyup', function(){
 
             } else {
 
-                $('#nama_po').val('PO tidak ditemukan');
+                if (res.is_active) {
+                    $('#nama_po').val(res.message);
+                } else {
+                    $('#nama_po').val('PO tidak ditemukan');
+                }
 
             }
         }
@@ -286,7 +327,9 @@ $('#formBusMasuk').submit(function(e){
         type: 'POST',
 
         data: {
-            plat_nomor: $('#plat_nomor').val()
+            plat_nomor: $('#plat_nomor').val(),
+            target_area: $('#target_area').val(),
+            tujuan: $('#tujuan').val()
         },
 
         dataType: 'json',

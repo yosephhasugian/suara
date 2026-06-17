@@ -6,6 +6,7 @@ class Auth extends CI_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('User_model'); // 🔥 FIX: huruf besar
+        $this->load->model('Activity_model');
         $this->load->helper('url');
         $this->load->library('session');
     }
@@ -31,6 +32,8 @@ class Auth extends CI_Controller {
                 'role' => $user['role']
             ]);
 
+            $this->Activity_model->log('login', 'User logged in successfully');
+
             echo json_encode([
                 'status' => 'success',
                 'message' => 'Login berhasil!'
@@ -44,6 +47,7 @@ class Auth extends CI_Controller {
     }
 
     public function logout() {
+        $this->Activity_model->log('logout', 'User logged out');
         $this->session->sess_destroy();
         redirect('auth');
     }
