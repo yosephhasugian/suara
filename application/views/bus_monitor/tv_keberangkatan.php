@@ -147,95 +147,90 @@
             height: 100%;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: rgba(0, 123, 255, 0.5) rgba(255,255,255,0.02);
-            border-radius: 16px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            scrollbar-color: #17a2b8 #222;
         }
         .table-wrapper::-webkit-scrollbar { width: 6px; }
-        .table-wrapper::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        .table-wrapper::-webkit-scrollbar-thumb { background: rgba(0, 123, 255, 0.4); border-radius: 3px; }
+        .table-wrapper::-webkit-scrollbar-track { background: #222; }
+        .table-wrapper::-webkit-scrollbar-thumb { 
+            background: #17a2b8; 
+            border-radius: 3px; 
+        }
 
         .table { 
             font-family: 'Arial', sans-serif !important;
-            color: var(--text-main); 
+            color: white; 
             margin-bottom: 0; 
-            border: none; 
-            background: transparent;
+            border: 1px solid #333; 
+            background: rgba(0,0,0,0.3);
             width: 100%;
         }
         .table thead th { 
-            background: rgba(15, 15, 27, 0.8) !important; 
-            color: #b5b5c3 !important; 
-            font-size: 14px; 
-            padding: 16px 12px; 
-            border-bottom: 2px solid var(--glass-border); 
-            border-top: none;
-            border-left: none;
-            border-right: none;
+            background: linear-gradient(135deg, #1a1a2e, #16213e) !important; 
+            color: #17a2b8 !important; 
+            font-size: 18px; 
+            font-weight: 700;
+            padding: 12px 8px; 
+            border: 1px solid #444; 
             text-align: center; 
             position: sticky;
             top: 0;
             z-index: 10;
-            font-weight: 800;
-            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .table tbody tr {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s ease, background 0.2s ease;
         }
         .table tbody td { 
-            padding: 14px 12px !important; 
-            font-size: 17px; 
-            font-weight: 600; 
-            border: none; 
+            padding: 10px 8px !important; 
+            font-size: 20px; 
+            font-weight: 700; 
+            border: 1px solid #222; 
             vertical-align: middle; 
+            transition: all 0.2s ease;
         }
         
         .table tbody tr:hover {
-            background: rgba(0, 123, 255, 0.08) !important;
-            border-bottom-color: rgba(0, 123, 255, 0.3);
+            transform: scale(1.02);
+            background: rgba(23, 162, 184, 0.15) !important;
+            box-shadow: inset 0 0 20px rgba(23, 162, 184, 0.2);
         }
 
         /* ================= COLUMN STYLES ================= */
         .plat-nomor { 
-            color: var(--accent-yellow); 
+            color: #ffc107; 
             font-family: 'Arial', sans-serif; 
-            font-size: 20px !important; 
+            font-size: 24px !important; 
             font-weight: 900;
             letter-spacing: 1px;
-            text-shadow: 0 0 8px rgba(255, 193, 7, 0.2);
         }
-        .tujuan { color: var(--accent-green); font-weight: 700; }
-        .waktu { font-family: 'Arial', sans-serif; color: #fff; font-weight: 700; }
-        .po-name { color: #fff; font-weight: 800; font-size: 18px; }
+        .tujuan { color: #00ff88; font-weight: 600; }
+        .waktu { font-family: 'Arial', sans-serif; color: #00d4ff; font-weight: 700; }
+        .po-name { color: #e0e0e0; font-weight: 500; }
 
         /* ✨ STATUS BADGE */
         .status-badge {
-            font-size: 12px;
+            font-size: 14px;
             padding: 6px 12px;
-            border-radius: 50px;
+            border-radius: 6px;
             display: inline-block;
-            width: 150px;
-            font-weight: 800;
+            width: 100%;
+            font-weight: 900;
             text-align: center;
-            text-transform: uppercase;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 123, 255, 0.2); 
-            color: var(--accent-blue); 
-            border-color: rgba(0, 123, 255, 0.4); 
-            animation: pulse-ready 2s infinite;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+            animation: pulse-badge 2s infinite;
         }
-        @keyframes pulse-ready {
-            0%, 100% { border-color: rgba(0, 123, 255, 0.4); box-shadow: 0 0 10px rgba(0, 123, 255, 0.2); }
-            50% { border-color: rgba(0, 212, 255, 0.7); box-shadow: 0 0 20px rgba(0, 123, 255, 0.4); }
+        @keyframes pulse-badge {
+            0%, 100% { box-shadow: inset 0 0 8px rgba(0,0,0,0.4), 0 0 0 0 rgba(23, 162, 184, 0.4); }
+            50% { box-shadow: inset 0 0 8px rgba(0,0,0,0.4), 0 0 15px 3px rgba(23, 162, 184, 0.6); }
+        }
+        .area-keberangkatan { 
+            background: linear-gradient(135deg, #17a2b8, #138496); 
+            color: white; 
         }
 
         /* ================= ROW STRIPING ================= */
-        tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.01); }
-        tbody tr:nth-child(odd) { background: rgba(0, 0, 0, 0.15); }
+        tbody tr:nth-child(even) { background: rgba(23, 162, 184, 0.08); }
+        tbody tr:nth-child(odd) { background: rgba(0, 0, 0, 0.2); }
 
         /* ================= EMPTY STATE ================= */
         .empty-state {
@@ -245,10 +240,10 @@
         }
         .empty-state i {
             font-size: 60px;
-            color: var(--accent-blue);
+            color: #17a2b8;
             margin-bottom: 20px;
             opacity: 0.8;
-            text-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+            text-shadow: 0 0 20px rgba(23, 162, 184, 0.3);
         }
         .empty-state p { font-size: 20px; margin: 5px 0; font-weight: 700; color: #fff; }
         .empty-state small { font-size: 14px; opacity: 0.7; }
@@ -437,12 +432,12 @@ function loadTV() {
                 let jam = formatTime(b.created_at, b.area_updated_at);
                 
                 html += `<tr>
-                    <td class="text-muted text-center" style="font-size:16px">${no++}</td>
-                    <td class="plat-nomor text-center">${b.plat_nomor}</td>
+                    <td class="text-muted" style="font-size:18px">${no++}</td>
+                    <td class="plat-nomor">${b.plat_nomor}</td>
                     <td class="text-start ps-4 po-name">${b.nama_po || '-'}</td>
                     <td class="tujuan text-start ps-4">${b.tujuan || 'Belum ditentukan'}</td>
-                    <td class="waktu text-center">${jam}</td>
-                    <td class="text-center"><div class="status-badge">${STATUS_TEXT}</div></td>
+                    <td class="waktu">${jam}</td>
+                    <td><div class="status-badge area-keberangkatan">${STATUS_TEXT}</div></td>
                 </tr>`;
             });
         }
