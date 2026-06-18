@@ -142,18 +142,20 @@
 
         /* ================= COLUMN HIGHLIGHTS ================= */
         .plat-nomor {
-            background-color: #ffffff;
-            color: #000000 !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
             font-family: 'Arial', sans-serif;
             font-size: 14px !important;
-            font-weight: 900;
-            letter-spacing: 1px;
-            display: inline-block;
-            padding: 3px 12px;
-            border-radius: 4px;
-            border: 2px solid #333333;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            font-weight: 800;
+            min-width: 110px;
+            color: #000000 !important;
+            background: var(--accent-yellow) !important;
             text-shadow: none !important;
+            letter-spacing: 1px;
         }
         .tujuan { color: var(--accent-green); font-weight: 800; }
         .waktu { font-family: 'Arial', sans-serif; color: #fff; font-weight: 700; }
