@@ -132,7 +132,7 @@
             font-weight: 600;
         }
         .waktu { 
-            font-family: 'Orbitron', sans-serif; 
+            font-family: 'Arial', sans-serif; 
             color: #00d4ff; 
             font-weight: 700;
         }
