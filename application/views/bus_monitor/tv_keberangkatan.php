@@ -321,12 +321,11 @@
         <table class="table table-sm">
             <thead>
                 <tr>
-                    <th width="4%">NO</th>
-                    <th width="18%">PLAT NOMOR</th>
-                    <th width="32%">NAMA PERUSAHAAN (PO)</th>
-                    <th width="26%">TUJUAN</th>
+                    <th width="5%">NO</th>
+                    <th width="20%">PLAT NOMOR</th>
+                    <th width="35%">NAMA PERUSAHAAN (PO)</th>
+                    <th width="30%">TUJUAN</th>
                     <th width="10%">JAM MASUK</th>
-                    <th width="10%">STATUS</th>
                 </tr>
             </thead>
             <tbody id="tvTable" class="text-center">
@@ -402,7 +401,7 @@ function loadTV() {
 
         if (!res || res.length === 0) {
             html = `<tr>
-                <td colspan="6">
+                <td colspan="5">
                     <div class="empty-state">
                         <i class="fas fa-bus"></i>
                         <p>BELUM ADA BUS SIAP BERANGKAT</p>
@@ -423,7 +422,6 @@ function loadTV() {
                         <td class="text-start ps-4 po-name">${b.nama_po || '-'}</td>
                         <td class="tujuan text-start ps-4">${b.tujuan || 'Belum ditentukan'}</td>
                         <td class="waktu">${jam}</td>
-                        <td><div class="status-badge ${BADGE_CLASS}">${STATUS_TEXT}</div></td>
                     </tr>`;
                 }
             });
@@ -439,7 +437,7 @@ function loadTV() {
     }, 'json')
     .fail(function(xhr, status, error) {
         console.error("❌ Gagal mengambil data:", error);
-        $('#tvTable').html(`<tr><td colspan="6" class="text-danger p-4">
+        $('#tvTable').html(`<tr><td colspan="5" class="text-danger p-4">
             <i class="fas fa-exclamation-triangle me-2"></i>
             Gagal memuat data server
         </td></tr>`);
