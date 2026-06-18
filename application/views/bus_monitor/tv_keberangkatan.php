@@ -135,7 +135,7 @@
         }
         .waktu { 
             font-family: 'Arial', sans-serif; 
-            color: #00d4ff; 
+            color: #ffc107; 
             font-weight: 700;
         }
         .po-name {
