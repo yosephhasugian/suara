@@ -143,6 +143,12 @@
                         <span class="right badge badge-danger shadow-sm">Antrian</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="<?= site_url('quick_announcement') ?>" class="nav-link <?= $this->uri->segment(1) == 'quick_announcement' ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-bullhorn text-warning"></i>
+                        <p>Pengumuman Cepat</p>
+                    </a>
+                </li>
 
                 <li class="nav-item">
                     <a href="<?= site_url('manajemen_iklan') ?>" class="nav-link <?= $this->uri->segment(1) == 'manajemen_iklan' ? 'active' : '' ?>">

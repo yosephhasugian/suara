@@ -58,3 +58,6 @@ $route['translate_uri_dashes'] = FALSE;
 $route['auth'] = 'auth/index';
 $route['auth/login'] = 'auth/login';  // ← ini yang kamu akses
 
+$route['quick_announcement'] = 'announcement/quick';
+$route['quick_announcement/save'] = 'announcement/save';
+

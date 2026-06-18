@@ -143,7 +143,7 @@
             font-size: 20px;
             font-weight: 700;
             border: 1px solid #444 !important;
-            vertical-align: middle;
+            vertical-align: top;
             transition: all 0.2s ease;
         }
         .table tbody tr {
