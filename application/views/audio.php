@@ -373,6 +373,12 @@
         <div class="card-header bg-success bg-gradient text-white d-flex justify-content-between align-items-center py-3">
             <h6 class="mb-0"><i class="bi bi-youtube me-2"></i>Background Music</h6>
             <div class="d-flex align-items-center gap-2">
+                <!-- Volume Control -->
+                <div class="d-flex align-items-center gap-1 me-2 animate__animated animate__fadeIn" title="Volume Musik" style="background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 20px;">
+                    <i class="bi bi-volume-up-fill text-white" style="font-size: 0.85rem;"></i>
+                    <input type="range" id="musicVolumeSlider" min="0" max="100" value="100" class="form-range" style="width: 70px; height: 4px; cursor: pointer; accent-color: white; margin: 0;">
+                    <span id="musicVolumeVal" style="font-size: 0.7rem; min-width: 28px; font-weight: bold; margin-left: 2px;" class="text-white">100%</span>
+                </div>
                 <!-- Pause/Play Controls -->
                 <button type="button" class="btn btn-light btn-sm text-success fw-bold py-1 px-3 shadow-sm" onclick="togglePlayPauseMusic()" id="btnMusicPlayPause" style="font-size: 0.8rem; border-radius: 20px;">
                     <i class="bi bi-pause-fill me-1"></i>Pause
@@ -1064,6 +1070,20 @@ $(document).ready(function() {
     $('#ttsGlobalRepeatSelect').val(ttsGlobalRepeat);
     $('#ttsGlobalDelaySelect').val(ttsGlobalDelay);
 
+    // Initialize Music Volume Slider
+    let initialMusicVol = localStorage.getItem('music_volume') || '100';
+    $('#musicVolumeSlider').val(initialMusicVol);
+    $('#musicVolumeVal').text(initialMusicVol + '%');
+
+    $('#musicVolumeSlider').on('input change', function() {
+        let vol = parseInt($(this).val());
+        $('#musicVolumeVal').text(vol + '%');
+        localStorage.setItem('music_volume', vol);
+        if (ytPlayer && typeof ytPlayer.setVolume === 'function') {
+            ytPlayer.setVolume(vol);
+        }
+    });
+
     // Initial state for Voice 2 Toggle
     let initialVoice2Enabled = localStorage.getItem('tts_en_voice_enabled') !== 'false';
     $('#ttsEnVoiceToggle').prop('checked', initialVoice2Enabled);
@@ -1271,6 +1291,10 @@ function onYouTubeIframeAPIReady() {
         events: {
             'onReady': function(e) {
                 console.log('✅ YouTube Player Ready');
+                let savedVol = parseInt(localStorage.getItem('music_volume') || '100');
+                if (typeof ytPlayer.setVolume === 'function') {
+                    ytPlayer.setVolume(savedVol);
+                }
                 setTimeout(() => {
                     ciGet('audio/get_next_audio', function(res) {
                         if (!res || !res.id) {
@@ -1309,6 +1333,12 @@ function playYoutube(videoId, title, showPopup = true) {
     stopAllAudio();
     ytPlayer.loadVideoById(videoId);
     ytPlayer.unMute();
+    
+    let savedVol = parseInt(localStorage.getItem('music_volume') || '100');
+    if (typeof ytPlayer.setVolume === 'function') {
+        ytPlayer.setVolume(savedVol);
+    }
+
     ytPlayer.playVideo();
     isMusicManuallyPaused = false;
     localStorage.setItem('music_manually_paused', 'false');
@@ -1332,6 +1362,12 @@ function togglePlayPauseMusic() {
         } else {
             ytPlayer.playVideo();
             ytPlayer.unMute();
+            
+            let savedVol = parseInt(localStorage.getItem('music_volume') || '100');
+            if (typeof ytPlayer.setVolume === 'function') {
+                ytPlayer.setVolume(savedVol);
+            }
+
             isMusicManuallyPaused = false;
             localStorage.setItem('music_manually_paused', 'false');
             btn.html('<i class="bi bi-pause-fill me-1"></i>Pause').removeClass('text-danger').addClass('text-success');
@@ -1567,7 +1603,8 @@ function resumeYoutube() {
     if (!ytPlayer) return;
     try {
         if (typeof ytPlayer.unMute === 'function') { ytPlayer.unMute(); }
-        if (typeof ytPlayer.setVolume === 'function') { ytPlayer.setVolume(100); }
+        let savedVol = parseInt(localStorage.getItem('music_volume') || '100');
+        if (typeof ytPlayer.setVolume === 'function') { ytPlayer.setVolume(savedVol); }
         if (typeof ytPlayer.playVideo === 'function') { ytPlayer.playVideo(); }
         isMusicPausedByQueue = false;
         console.log('▶️ YouTube melanjutkan dari posisi sebelumnya');
