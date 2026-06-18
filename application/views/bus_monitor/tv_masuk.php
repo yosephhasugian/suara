@@ -63,19 +63,15 @@
             100% { transform: translate(50px, 30px) scale(1.1); }
         }
 
-        /* ================= GLASSMOPHIC HEADER ================= */
+        /* ================= HEADER ================= */
         .header { 
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 15px 30px; 
+            background: #111;
+            border-bottom: 4px solid #28a745;
+            padding: 12px 25px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            border-radius: 0 0 20px 20px;
-            margin: 0 15px;
+            box-shadow: 0 4px 20px rgba(40, 167, 69, 0.3);
             z-index: 10;
         }
         .header-left {
@@ -84,14 +80,22 @@
             gap: 20px;
         }
         .header h1 { 
-            font-size: 24px; 
+            font-size: 26px; 
             margin: 0; 
-            color: #fff; 
+            color: #28a745; 
             font-weight: 900; 
-            letter-spacing: 1px; 
-            background: linear-gradient(135deg, #fff 0%, #a8ffb2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-icon {
+            font-size: 32px;
+            animation: float-icon 3s ease-in-out infinite;
+        }
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
         
         /* 🚌 BUS COUNTER BADGE */
@@ -333,15 +337,15 @@
 </head>
 <body>
 
-<!-- Ambient Glowing Backgrounds -->
-<div class="glow-bg glow-1"></div>
-<div class="glow-bg glow-2"></div>
-
-<!-- HEADER WITH COUNTER -->
+<!-- HEADER -->
 <div class="header">
     <div class="header-left">
-        <h1><i class="fas fa-desktop text-success mr-2"></i> MONITORING BUS MASUK TERMINAL - PULO GEBANG</h1>
-        <!-- ✨ BUS COUNTER -->
+        <h1>
+            <span class="header-icon">
+                <i class="fas fa-bus"></i><i class="fas fa-arrow-down text-success" style="font-size: 0.6em; margin-left: -8px; vertical-align: top;"></i>
+            </span>
+            MONITORING BUS MASUK - TERMINAL PULO GEBANG
+        </h1>
         <div class="bus-counter">
             <i class="fas fa-bus"></i>
             <span class="number" id="busCount">0</span>
