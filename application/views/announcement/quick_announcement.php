@@ -172,8 +172,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     <div class="col-6">
                                         <label class="form-label">🔁 Jumlah Putar</label>
                                         <select name="repeat" class="form-select" required>
-                                            <option value="1" selected>1 Kali</option>
-                                            <option value="2">2 Kali</option>
+                                            <option value="1">1 Kali</option>
+                                            <option value="2" selected>2 Kali</option>
                                             <option value="3">3 Kali</option>
                                             <option value="4">4 Kali</option>
                                             <option value="5">5 Kali</option>
