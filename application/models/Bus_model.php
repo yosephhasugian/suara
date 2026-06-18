@@ -2,7 +2,6 @@
 
 class Bus_model extends CI_Model {
     
-    // ✅ METHOD BARU: Get bus by area dengan limit
      public function get_bus_by_area($area, $limit = 50) {
         $this->db->select('id, plat_nomor, nama_po, tujuan, created_at, area, area_updated_at');
         $this->db->from('audio_queue');
@@ -11,10 +10,8 @@ class Bus_model extends CI_Model {
         $this->db->where('type', 'bus');
         $this->db->where('plat_nomor IS NOT NULL');
         $this->db->where('plat_nomor !=', '');
-        $this->db->where('created_at >=', date('Y-m-d 00:00:00'));
-        $this->db->where('created_at <=', date('Y-m-d 23:59:59'));
         
-        // ✨ Urutkan berdasarkan jam masuk area, bukan jam pertama input
+        // Urutkan berdasarkan jam masuk area, bukan jam pertama input
         $this->db->order_by('area_updated_at', 'DESC');
         $this->db->limit($limit);
         

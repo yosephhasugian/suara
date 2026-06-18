@@ -276,7 +276,7 @@
                 </tr>
             </thead>
             <tbody id="tvTable" class="text-center">
-                <!-- Data loaded via AJAX -->
+                <!-- Data will be loaded here -->
             </tbody>
         </table>
     </div>
@@ -294,55 +294,74 @@
 
 <script>
 const BASE_URL = "<?= base_url(); ?>";
+const AREA_CODE = "keberangkatan";
 const BADGE_CLASS = "area-keberangkatan";
 const STATUS_TEXT = "AREA KEBERANGKATAN";
-const REFRESH_INTERVAL = 5000;
+const REFRESH_INTERVAL = 5000; // 5 detik
 
 // ================= CLOCK & DATE =================
 function updateClock() {
     let d = new Date();
-    let dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    
+    // Date
+    let dateOptions = { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+    };
     document.getElementById('dateText').innerText = d.toLocaleDateString('id-ID', dateOptions).toUpperCase();
-    document.getElementById('timeText').innerText = d.toLocaleTimeString('id-ID');
+    
+    // Time with seconds
+    let timeString = d.toLocaleTimeString('id-ID');
+    document.getElementById('timeText').innerText = timeString;
 }
 setInterval(updateClock, 1000);
 updateClock();
 
 // ================= FORMAT JAM =================
-function formatTime(timestamp, areaUpdated) {
-    let timeValue = areaUpdated || timestamp;
-    if (!timeValue) return '--:--';
-    let dt = new Date(timeValue);
-    return dt.getHours().toString().padStart(2, '0') + ":" + dt.getMinutes().toString().padStart(2, '0');
+function formatTime(timestamp) {
+    if (!timestamp) return '--:--';
+    let dt = new Date(timestamp);
+    return dt.getHours().toString().padStart(2, '0') + ":" + 
+           dt.getMinutes().toString().padStart(2, '0');
 }
 
 // ================= LOAD DATA TV =================
 function loadTV() {
+    // Show refresh indicator
     $('#refreshIndicator').removeClass('hidden');
+    
     $.get(BASE_URL + 'bus_monitor/get_tv_keberangkatan', function(res) {
         let html = '';
         let no = 1;
 
         if (!res || res.length === 0) {
-            html = `<tr><td colspan="6"><div class="empty-state">
-                <i class="fas fa-bus"></i>
-                <p>BELUM ADA BUS SIAP BERANGKAT</p>
-                <small class="text-muted">Bus akan muncul otomatis saat dipindah ke area keberangkatan</small>
-            </div></td></tr>`;
+            html = `<tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <i class="fas fa-bus"></i>
+                        <p>BELUM ADA BUS SIAP BERANGKAT</p>
+                        <small class="text-muted">Bus akan muncul otomatis saat dipindah ke area keberangkatan</small>
+                    </div>
+                </td>
+            </tr>`;
         } else {
-            let validBuses = res.filter(b => b.plat_nomor && b.plat_nomor.trim() !== "");
-            
-            validBuses.forEach(b => {
-                let jam = formatTime(b.created_at, b.area_updated_at);
-                
-                html += `<tr>
-                    <td class="text-muted" style="font-size:18px">${no++}</td>
-                    <td class="plat-nomor">${b.plat_nomor}</td>
-                    <td class="text-start ps-4 po-name">${b.nama_po || '-'}</td>
-                    <td class="tujuan text-start ps-4">${b.tujuan || 'Belum ditentukan'}</td>
-                    <td class="waktu">${jam}</td>
-                    <td><div class="status-badge ${BADGE_CLASS}">${STATUS_TEXT}</div></td>
-                </tr>`;
+            res.forEach(b => {
+                // Filter plat nomor kosong
+                if (b.plat_nomor && b.plat_nomor.trim() !== "") {
+                    // Gunakan area_updated_at jika ada (waktu pindah ke area keberangkatan), jika tidak gunakan created_at
+                    let jam = formatTime(b.area_updated_at || b.created_at);
+                    
+                    html += `<tr>
+                        <td class="text-muted" style="font-size:18px">${no++}</td>
+                        <td class="plat-nomor">${b.plat_nomor}</td>
+                        <td class="text-start ps-4 po-name">${b.nama_po || '-'}</td>
+                        <td class="tujuan text-start ps-4">${b.tujuan || 'Belum ditentukan'}</td>
+                        <td class="waktu">${jam}</td>
+                        <td><div class="status-badge ${BADGE_CLASS}">${STATUS_TEXT}</div></td>
+                    </tr>`;
+                }
             });
         }
         
@@ -351,23 +370,23 @@ function loadTV() {
         // Hide refresh indicator after load
         setTimeout(() => {
             $('#refreshIndicator').addClass('hidden');
-        }, 800); // Tunda 800ms agar animasi putar terlihat halus
+        }, 500);
         
-    }, 'json').fail(function(xhr) {
-        setTimeout(() => {
-            $('#refreshIndicator').addClass('hidden');
-        }, 800);
-        console.error("❌ Error:", xhr.status);
-        $('#tvTable').html(`<tr><td colspan="6" class="text-danger p-4 text-center">
-            <i class="fas fa-exclamation-triangle me-2"></i>Gagal memuat data dari server
+    }, 'json')
+    .fail(function(xhr, status, error) {
+        console.error("❌ Gagal mengambil data:", error);
+        $('#tvTable').html(`<tr><td colspan="6" class="text-danger p-4">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Gagal memuat data server
         </td></tr>`);
+        $('#refreshIndicator').addClass('hidden');
     });
 }
 
 // ================= AUTO REFRESH =================
 setInterval(loadTV, REFRESH_INTERVAL);
 
-// ================= INITIAL LOAD =================
+// Initial load
 $(document).ready(function() {
     loadTV();
     
@@ -379,8 +398,9 @@ $(document).ready(function() {
     });
 });
 
-// ================= KEYBOARD SHORTCUT =================
+// ================= KEYBOARD SHORTCUT (Opsional) =================
 document.addEventListener('keydown', function(e) {
+    // Tekan 'R' untuk refresh manual
     if (e.key.toLowerCase() === 'r' && !e.target.matches('input, textarea')) {
         e.preventDefault();
         loadTV();
