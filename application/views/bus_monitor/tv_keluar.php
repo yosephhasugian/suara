@@ -14,7 +14,7 @@
         body { 
             background: #000; 
             color: white; 
-            font-family: 'Roboto', sans-serif; 
+            font-family: 'Arial', sans-serif; 
             text-transform: uppercase; 
             overflow: hidden; 
             height: 100vh; 
@@ -50,7 +50,7 @@
             color: white;
             padding: 8px 20px;
             border-radius: 50px;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 18px;
             font-weight: 700;
             display: flex;
@@ -72,7 +72,7 @@
 
         /* ================= CLOCK ================= */
         #tanggal { 
-            font-family: 'Orbitron', sans-serif; 
+            font-family: 'Arial', sans-serif; 
             font-size: 16px; 
             color: #fff; 
             text-align: right;
@@ -101,6 +101,7 @@
         .table-wrapper::-webkit-scrollbar-thumb { background: #dc3545; border-radius: 3px; }
 
         .table { 
+            font-family: 'Arial', sans-serif !important;
             color: white; 
             margin-bottom: 0; 
             border: 1px solid #333; 
@@ -135,13 +136,13 @@
         /* ================= COLUMN STYLES ================= */
         .plat-nomor { 
             color: #ffc107; 
-            font-family: 'Orbitron', sans-serif; 
+            font-family: 'Arial', sans-serif; 
             font-size: 22px !important; 
             font-weight: 900;
             letter-spacing: 1px;
         }
         .tujuan { color: #00ff88; font-weight: 600; }
-        .waktu { font-family: 'Orbitron', sans-serif; color: #ff6b6b; font-weight: 700; }
+        .waktu { font-family: 'Arial', sans-serif; color: #ff6b6b; font-weight: 700; }
         .po-name { color: #e0e0e0; font-weight: 500; }
 
         /* ✨ STATUS BADGE */

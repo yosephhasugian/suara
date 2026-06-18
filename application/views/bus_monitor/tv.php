@@ -26,7 +26,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Arial', sans-serif;
             text-transform: uppercase;
             overflow: hidden;
             height: 100vh;
@@ -69,7 +69,7 @@
             color: var(--accent-yellow);
         }
         #tanggal {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 16px;
             color: #ffffff;
             text-align: right;
@@ -102,6 +102,7 @@
         .table-wrapper::-webkit-scrollbar-thumb { background: rgba(255, 193, 7, 0.6); border-radius: 3px; }
 
         .table {
+            font-family: 'Arial', sans-serif !important;
             color: var(--text-main);
             margin-bottom: 0;
             border: none;
@@ -142,14 +143,14 @@
         /* ================= COLUMN HIGHLIGHTS ================= */
         .plat-nomor {
             color: var(--accent-yellow);
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 21px !important;
             font-weight: 900;
             letter-spacing: 1px;
             text-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
         }
         .tujuan { color: var(--accent-green); font-weight: 800; }
-        .waktu { font-family: 'Orbitron', sans-serif; color: #fff; font-weight: 700; }
+        .waktu { font-family: 'Arial', sans-serif; color: #fff; font-weight: 700; }
         .po-name { color: #ffffff; font-weight: 900; font-size: 19px; }
 
         /* ================= BADGE STATUS AREA ================= */
@@ -285,7 +286,7 @@
             gap: 6px;
             padding: 8px 12px;
             border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 14px;
             font-weight: 800;
             min-width: 110px;
@@ -321,7 +322,7 @@
             color: #000000 !important;
         }
         .status-pill.completed-total .total-val {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 13px;
             font-weight: 900;
         }
@@ -332,7 +333,7 @@
             animation: pulse-total-glow 2s infinite alternate;
         }
         .status-pill.active-total .total-val {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 13px;
             font-weight: 900;
         }

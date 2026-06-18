@@ -14,7 +14,7 @@
         body {
             background: #000;
             color: white;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Arial', sans-serif;
             text-transform: uppercase;
             overflow: hidden;
             height: 100vh;
@@ -51,7 +51,7 @@
             50% { transform: translateY(-5px); }
         }
         #tanggal {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 18px;
             color: #fff;
             text-align: right;

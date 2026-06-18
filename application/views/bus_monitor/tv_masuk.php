@@ -28,7 +28,7 @@
         body { 
             background-color: var(--bg-color); 
             color: var(--text-main); 
-            font-family: 'Outfit', sans-serif; 
+            font-family: 'Arial', sans-serif; 
             text-transform: uppercase; 
             overflow: hidden; 
             height: 100vh; 
@@ -101,7 +101,7 @@
             color: #fff;
             padding: 6px 20px;
             border-radius: 50px;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 15px;
             font-weight: 700;
             display: flex;
@@ -119,7 +119,7 @@
             font-size: 24px; 
             color: var(--accent-green); 
             font-weight: 900;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             text-shadow: 0 0 10px rgba(0, 255, 135, 0.3);
         }
 
@@ -131,7 +131,7 @@
             line-height: 1.3;
         }
         #tanggal .time {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 22px;
             color: var(--accent-green);
             font-weight: 900;
@@ -159,6 +159,7 @@
         .table-wrapper::-webkit-scrollbar-thumb { background: rgba(40, 167, 69, 0.4); border-radius: 3px; }
 
         .table { 
+            font-family: 'Arial', sans-serif !important;
             color: var(--text-main); 
             margin-bottom: 0; 
             border: none; 
@@ -201,14 +202,14 @@
         /* ================= COLUMN STYLES ================= */
         .plat-nomor { 
             color: var(--accent-yellow); 
-            font-family: 'Orbitron', sans-serif; 
+            font-family: 'Arial', sans-serif; 
             font-size: 20px !important; 
             font-weight: 900;
             letter-spacing: 1px;
             text-shadow: 0 0 8px rgba(255, 193, 7, 0.2);
         }
         .tujuan { color: var(--accent-blue); font-weight: 700; }
-        .waktu { font-family: 'Orbitron', sans-serif; color: #fff; font-weight: 700; }
+        .waktu { font-family: 'Arial', sans-serif; color: #fff; font-weight: 700; }
         .po-name { color: #fff; font-weight: 800; font-size: 18px; }
 
         /* ✨ CURRENT LOCATION BADGE */

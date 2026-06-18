@@ -7,17 +7,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@500;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: white; font-family: 'Roboto', sans-serif; text-transform: uppercase; overflow: hidden; height: 100vh; }
+        body { background: #000; color: white; font-family: 'Arial', sans-serif; text-transform: uppercase; overflow: hidden; height: 100vh; }
         .header { background: #111; border-bottom: 3px solid #6c757d; padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; }
         .header h1 { font-size: 26px; margin: 0; color: #6c757d; font-weight: 900; letter-spacing: 1px; }
-        #tanggal { font-family: 'Orbitron', sans-serif; font-size: 16px; color: #fff; }
+        #tanggal { font-family: 'Arial', sans-serif; font-size: 16px; color: #fff; }
         .table-container { padding: 10px; }
-        .table { color: white; margin-bottom: 0; border: 1px solid #333; }
+        .table { font-family: 'Arial', sans-serif !important; color: white; margin-bottom: 0; border: 1px solid #333; }
         .table thead th { background-color: #222 !important; color: #6c757d !important; font-size: 18px; padding: 10px; border: 1px solid #444; text-align: center; }
         .table tbody td { padding: 8px 6px !important; font-size: 19px; font-weight: 700; border: 1px solid #222; vertical-align: middle; }
-        .plat-nomor { color: #ffc107; font-family: 'Orbitron', sans-serif; font-size: 22px !important; }
+        .plat-nomor { color: #ffc107; font-family: 'Arial', sans-serif; font-size: 22px !important; }
         .tujuan { color: #00ff88; }
-        .waktu { font-family: 'Orbitron', sans-serif; color: #00d4ff; }
+        .waktu { font-family: 'Arial', sans-serif; color: #00d4ff; }
         .status-badge { font-size: 14px; padding: 5px 10px; border-radius: 4px; display: inline-block; width: 100%; font-weight: 900; text-align: center; box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
         .area-pengendapan { background: #6c757d; color: white; }
         tbody tr:nth-child(even) { background: rgba(108,117,125,0.1); }
