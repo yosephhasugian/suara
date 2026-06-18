@@ -252,7 +252,9 @@
 <!-- HEADER -->
 <div class="header">
     <h1>
-        <span class="header-icon">🛫</span>
+        <span class="header-icon">
+            <i class="fas fa-bus"></i><i class="fas fa-arrow-up text-warning" style="font-size: 0.6em; margin-left: -8px; vertical-align: top;"></i>
+        </span>
         AREA KEBERANGKATAN - TERMINAL PULO GEBANG
     </h1>
     <div id="tanggal">
