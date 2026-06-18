@@ -142,12 +142,18 @@
 
         /* ================= COLUMN HIGHLIGHTS ================= */
         .plat-nomor {
-            color: var(--accent-blue);
+            background-color: #ffffff;
+            color: #000000 !important;
             font-family: 'Arial', sans-serif;
-            font-size: 21px !important;
+            font-size: 14px !important;
             font-weight: 900;
             letter-spacing: 1px;
-            text-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 4px;
+            border: 2px solid #333333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-shadow: none !important;
         }
         .tujuan { color: var(--accent-green); font-weight: 800; }
         .waktu { font-family: 'Arial', sans-serif; color: #fff; font-weight: 700; }
@@ -523,7 +529,7 @@ function loadTV() {
                             <td class="text-muted text-center" style="font-size:15px">${no++}</td>
                             <td class="text-start ps-4">
                                 <div class="po-name">${b.nama_po || '-'}</div>
-                                <div class="plat-nomor" style="font-size: 15px !important; margin-top: 2px;">${b.plat_nomor}</div>
+                                <div class="plat-nomor" style="margin-top: 4px;">${b.plat_nomor}</div>
                             </td>
                             <td class="tujuan text-start ps-4" style="font-size:16px">${b.tujuan || 'Belum Lapor'}</td>
                             <td class="timeline-cell">${tdMasuk}</td>
