@@ -8,6 +8,7 @@
     <!-- Bootstrap & Fonts -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@500;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* ================= BASE ================= */
@@ -23,7 +24,7 @@
 
         /* ================= HEADER ================= */
         .header { 
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            background: #111;
             border-bottom: 4px solid #dc3545; 
             padding: 12px 25px; 
             display: flex; 
@@ -41,33 +42,47 @@
             margin: 0; 
             color: #dc3545; 
             font-weight: 900; 
-            letter-spacing: 1px; 
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-icon {
+            font-size: 32px;
+            animation: float-icon 3s ease-in-out infinite;
+        }
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
         
-        /* ✨ BUS COUNTER BADGE */
+        /* 🚌 BUS COUNTER BADGE */
         .bus-counter {
-            background: linear-gradient(135deg, #dc3545, #a71d2a);
-            color: white;
-            padding: 8px 20px;
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #fff;
+            padding: 6px 20px;
             border-radius: 50px;
             font-family: 'Arial', sans-serif;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5);
-            animation: pulse-counter 2s infinite;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(220, 53, 69, 0.2);
+            animation: pulse-counter 2.5s infinite;
         }
         @keyframes pulse-counter {
-            0%, 100% { box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5); }
-            50% { box-shadow: 0 4px 25px rgba(220, 53, 69, 0.8); }
+            0%, 100% { border-color: rgba(220, 53, 69, 0.3); box-shadow: 0 0 15px rgba(220, 53, 69, 0.2); }
+            50% { border-color: rgba(255, 100, 100, 0.6); box-shadow: 0 0 25px rgba(220, 53, 69, 0.4); }
         }
-        .bus-counter i { font-size: 20px; }
+        .bus-counter i { color: #dc3545; font-size: 16px; }
         .bus-counter .number { 
             font-size: 24px; 
-            color: #fff; 
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            color: #dc3545; 
+            font-weight: 900;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 0 0 10px rgba(220, 53, 69, 0.3);
         }
 
         /* ================= CLOCK ================= */
@@ -86,8 +101,8 @@
 
         /* ================= TABLE ================= */
         .table-container { 
-            padding: 10px; 
-            height: calc(100vh - 70px);
+            padding: 15px; 
+            height: calc(100vh - 120px);
             overflow: hidden;
         }
         .table-wrapper {
@@ -211,7 +226,7 @@
         /* ================= REFRESH INDICATOR ================= */
         .refresh-indicator {
             position: fixed;
-            bottom: 15px;
+            bottom: 60px;
             right: 20px;
             background: rgba(220, 53, 69, 0.9);
             color: white;
@@ -228,19 +243,75 @@
         .refresh-indicator i { animation: spin 2s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .refresh-indicator.hidden { display: none; }
+
+        /* ================= DYNAMIC RUNNING TICKER ================= */
+        .ticker-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 48px;
+            background: rgba(10, 10, 20, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            z-index: 100;
+        }
+        .ticker-title {
+            background: linear-gradient(135deg, #dc3545, #a71d2a);
+            color: white;
+            padding: 0 25px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 1px;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            z-index: 2;
+            white-space: nowrap;
+        }
+        .ticker {
+            display: flex;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: marquee 90s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+        .ticker-item {
+            display: inline-block;
+            padding: 0 35px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .ticker-item i {
+            color: #ffc107;
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
 
-<!-- HEADER WITH COUNTER -->
+<!-- HEADER -->
 <div class="header">
     <div class="header-left">
-        <h1>🔴 BUS TELAH BERANGKAT - TERMINAL PULO GEBANG</h1>
-        <!-- ✨ BUS COUNTER -->
+        <h1>
+            <span class="header-icon">
+                <i class="fas fa-bus"></i><i class="fas fa-arrow-right text-danger" style="font-size: 0.6em; margin-left: -8px; vertical-align: top;"></i>
+            </span>
+            BUS KELUAR - TERMINAL PULO GEBANG
+        </h1>
         <div class="bus-counter">
-            <i class="fas fa-flag-checkered"></i>
+            <i class="fas fa-bus"></i>
             <span class="number" id="busCount">0</span>
-            <small style="font-size:12px; opacity:0.9">TELAH KELUAR</small>
+            <small style="font-size:11px; opacity:0.8; font-weight:800; letter-spacing:0.5px">BUS HARI INI</small>
         </div>
     </div>
     <div id="tanggal">
@@ -255,12 +326,11 @@
         <table class="table table-sm">
             <thead>
                 <tr>
-                    <th width="4%">NO</th>
-                    <th width="18%">PLAT NOMOR</th>
-                    <th width="30%">NAMA PERUSAHAAN (PO)</th>
-                    <th width="28%">TUJUAN AKHIR</th>
+                    <th width="5%">NO</th>
+                    <th width="20%">PLAT NOMOR</th>
+                    <th width="35%">NAMA PERUSAHAAN (PO)</th>
+                    <th width="30%">TUJUAN AKHIR</th>
                     <th width="10%">JAM KELUAR</th>
-                    <th width="10%">STATUS</th>
                 </tr>
             </thead>
             <tbody id="tvTable" class="text-center">
@@ -274,6 +344,16 @@
 <div class="refresh-indicator hidden" id="refreshIndicator">
     <i class="fas fa-sync-alt"></i>
     <span>Updating...</span>
+</div>
+
+<!-- DYNAMIC RUNNING TICKER -->
+<div class="ticker-wrap">
+    <div class="ticker-title"><i class="fas fa-bullhorn mr-2"></i> INFO TERMINAL</div>
+    <div class="ticker">
+        <div class="ticker-item"><i class="fas fa-check-circle"></i> Selamat Datang di Terminal Terpadu Pulo Gebang - Utamakan keselamatan dan kenyamanan bersama selama di perjalanan.</div>
+        <div class="ticker-item"><i class="fas fa-info-circle"></i> INFO BARANG TEMUAN: Petugas rutin menginput barang tertinggal di menu Lost & Found. Bagi penumpang yang merasa kehilangan barang, silakan memeriksa ke Pusat Layanan Informasi Terminal.</div>
+        <div class="ticker-item"><i class="fas fa-exclamation-triangle"></i> Hati-hati terhadap segala bentuk penipuan. Harap membeli tiket resmi hanya di loket Agen PO resmi atau aplikasi pemesanan tiket resmi.</div>
+    </div>
 </div>
 
 <!-- SCRIPTS -->
@@ -313,9 +393,9 @@ function loadTV() {
         let totalCount = 0;
 
         if (!res || res.length === 0) {
-            html = `<tr><td colspan="6"><div class="empty-state">
-                <i class="fas fa-flag-checkered"></i>
-                <p>BELUM ADA BUS YANG BERANGKAT</p>
+            html = `<tr><td colspan="5"><div class="empty-state">
+                <i class="fas fa-bus"></i>
+                <p>BELUM ADA BUS YANG KELUAR</p>
                 <small>Bus akan muncul otomatis saat dikonfirmasi keluar</small>
             </div></td></tr>`;
         } else {
@@ -332,7 +412,6 @@ function loadTV() {
                     <td class="text-start ps-4 po-name">${b.nama_po || '-'}</td>
                     <td class="tujuan text-start ps-4">${b.tujuan || 'Belum ditentukan'}</td>
                     <td class="waktu">${jam}</td>
-                    <td><div class="status-badge area-berangkat">${STATUS_TEXT}</div></td>
                 </tr>`;
             });
         }
@@ -352,9 +431,10 @@ function loadTV() {
         
     }, 'json').fail(function(xhr) {
         console.error("❌ Error:", xhr.status);
-        $('#tvTable').html(`<tr><td colspan="6" class="text-danger p-4">
+        $('#tvTable').html(`<tr><td colspan="5" class="text-danger p-4">
             <i class="fas fa-exclamation-triangle me-2"></i>Gagal memuat data
         </td></tr>`);
+        $('#refreshIndicator').addClass('hidden');
     });
 }
 
