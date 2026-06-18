@@ -87,7 +87,7 @@
             font-family: 'Arial', sans-serif !important;
             color: white;
             margin-bottom: 0;
-            border: 1px solid #333;
+            border: 1px solid #444 !important;
             background: rgba(0,0,0,0.3);
         }
         .table thead th {
@@ -96,7 +96,7 @@
             font-size: 18px;
             font-weight: 700;
             padding: 12px 8px;
-            border: 1px solid #444;
+            border: 1px solid #555 !important;
             text-align: center;
             position: sticky;
             top: 0;
@@ -107,7 +107,7 @@
             padding: 10px 8px !important;
             font-size: 20px;
             font-weight: 700;
-            border: 1px solid #222;
+            border: 1px solid #444 !important;
             vertical-align: middle;
             transition: all 0.2s ease;
         }
