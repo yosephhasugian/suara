@@ -122,7 +122,7 @@
         /* ================= COLUMN HIGHLIGHTS ================= */
         .plat-nomor {
             color: #ffc107;
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 24px !important;
             font-weight: 900;
             letter-spacing: 1px;
