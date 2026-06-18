@@ -11,6 +11,12 @@ class Bus_model extends CI_Model {
         $this->db->where('plat_nomor IS NOT NULL');
         $this->db->where('plat_nomor !=', '');
         
+        // Filter agar hanya menampilkan data hari ini (baik diinput hari ini atau dipindahkan hari ini)
+        $this->db->group_start();
+        $this->db->where('created_at >=', date('Y-m-d 00:00:00'));
+        $this->db->or_where('area_updated_at >=', date('Y-m-d 00:00:00'));
+        $this->db->group_end();
+        
         // Urutkan berdasarkan jam masuk area, bukan jam pertama input
         $this->db->order_by('area_updated_at', 'DESC');
         $this->db->limit($limit);
