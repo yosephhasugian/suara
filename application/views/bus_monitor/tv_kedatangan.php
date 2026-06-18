@@ -84,6 +84,7 @@
 
         /* ================= TABLE STYLES ================= */
         .table {
+            font-family: 'Arial', sans-serif !important;
             color: white;
             margin-bottom: 0;
             border: 1px solid #333;
