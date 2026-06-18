@@ -307,7 +307,13 @@
 
                     <!-- EN VOICE SETTINGS -->
                     <div class="col-md-6">
-                        <span class="fw-bold text-dark d-block mb-2 small"><i class="bi bi-flag-fill text-primary me-1"></i> Pengaturan Bahasa Inggris</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-dark small"><i class="bi bi-flag-fill text-danger me-1"></i> Pengaturan Bahasa Indonesia (Suara 2)</span>
+                            <div class="form-check form-switch small">
+                                <input class="form-check-input" type="checkbox" id="ttsEnVoiceToggle" checked>
+                                <label class="form-check-label text-muted" for="ttsEnVoiceToggle" id="ttsEnVoiceToggleLabel">Aktif</label>
+                            </div>
+                        </div>
                         <div class="mb-2">
                             <label class="form-label small fw-bold mb-1" style="font-size: 0.75rem;">🗣️ Pilihan Suara (Voice)</label>
                             <select id="ttsEnVoiceSelect" class="form-select form-select-sm">
@@ -330,9 +336,32 @@
                         </div>
                         <div class="text-end mt-2">
                             <button type="button" class="btn btn-sm btn-outline-success" onclick="testTtsVoice('en')">
-                                <i class="bi bi-soundwave me-1"></i> Tes Suara EN
+                                <i class="bi bi-soundwave me-1"></i> Tes Suara ID 2
                             </button>
                         </div>
+                    </div>
+                </div>
+                <div class="row g-4 mt-1 border-top pt-2">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold mb-1" style="font-size: 0.75rem;">🔁 Jumlah Putar Global (Global Repeat)</label>
+                        <select id="ttsGlobalRepeatSelect" class="form-select form-select-sm">
+                            <option value="1">1 Kali</option>
+                            <option value="2">2 Kali</option>
+                            <option value="3">3 Kali</option>
+                            <option value="4">4 Kali</option>
+                            <option value="5">5 Kali</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold mb-1" style="font-size: 0.75rem;">⏱️ Jeda Antar Putaran Global (Global Delay)</label>
+                        <select id="ttsGlobalDelaySelect" class="form-select form-select-sm">
+                            <option value="1">1 Detik</option>
+                            <option value="1.5">1.5 Detik</option>
+                            <option value="2">2 Detik</option>
+                            <option value="3">3 Detik</option>
+                            <option value="4">4 Detik</option>
+                            <option value="5">5 Detik</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -423,10 +452,31 @@
                                 <input type="text" class="form-control form-control-sm" name="jurusan"
                                        placeholder="Jakarta - Surabaya" required>
                             </div>
-                            <div class="col-12">
+                            <div class="col-4">
                                 <label class="form-label small mb-1">🚪 Nomor Pintu / Gate</label>
                                 <input type="text" class="form-control form-control-sm" name="pintu"
                                        placeholder="Contoh: Pintu 3" required>
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label small mb-1">🔁 Jumlah Putar</label>
+                                <select class="form-select form-select-sm" name="repeat" required>
+                                    <option value="1">1 Kali</option>
+                                    <option value="2" selected>2 Kali</option>
+                                    <option value="3">3 Kali</option>
+                                    <option value="4">4 Kali</option>
+                                    <option value="5">5 Kali</option>
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label small mb-1">⏱️ Jeda (Detik)</label>
+                                <select class="form-select form-select-sm" name="delay" required>
+                                    <option value="1">1 Detik</option>
+                                    <option value="1.5" selected>1.5 Detik</option>
+                                    <option value="2">2 Detik</option>
+                                    <option value="3">3 Detik</option>
+                                    <option value="4">4 Detik</option>
+                                    <option value="5">5 Detik</option>
+                                </select>
                             </div>
                         </div>
                         <div class="mt-3 flex-grow-1 d-flex flex-column justify-content-end">
@@ -681,6 +731,8 @@ let ttsRate = parseFloat(localStorage.getItem('tts_rate') || '0.9');
 let ttsPitch = parseFloat(localStorage.getItem('tts_pitch') || '1.0');
 let ttsEnRate = parseFloat(localStorage.getItem('tts_en_rate') || '0.9');
 let ttsEnPitch = parseFloat(localStorage.getItem('tts_en_pitch') || '1.0');
+let ttsGlobalRepeat = parseInt(localStorage.getItem('tts_global_repeat') || '1');
+let ttsGlobalDelay = parseFloat(localStorage.getItem('tts_global_delay') || '1.5');
 let isMusicManuallyPaused = localStorage.getItem('music_manually_paused') === 'true';
 
 function populateTtsVoices() {
@@ -706,12 +758,12 @@ function populateTtsVoices() {
         return a.name.localeCompare(b.name);
     });
 
-    // Urutkan suara Inggris duluan untuk selectEn
+    // Urutkan suara Indonesia duluan juga untuk selectEn (Bahasa Indonesia Suara 2)
     let enVoices = [...voices].sort((a, b) => {
-        let aEn = a.lang.includes('en') || a.name.toLowerCase().includes('english');
-        let bEn = b.lang.includes('en') || b.name.toLowerCase().includes('english');
-        if (aEn && !bEn) return -1;
-        if (!aEn && bEn) return 1;
+        let aIndo = a.lang.includes('id') || a.name.toLowerCase().includes('indonesian');
+        let bIndo = b.lang.includes('id') || b.name.toLowerCase().includes('indonesian');
+        if (aIndo && !bIndo) return -1;
+        if (!aIndo && bIndo) return 1;
         return a.name.localeCompare(b.name);
     });
 
@@ -734,14 +786,14 @@ function populateTtsVoices() {
 
     let hasSelectedEn = false;
     enVoices.forEach(voice => {
-        let isEn = voice.lang.includes('en') || voice.name.toLowerCase().includes('english');
-        let label = `${voice.name} (${voice.lang})${isEn ? ' 🇬🇧 [Rekomendasi]' : ''}`;
+        let isIndo = voice.lang.includes('id') || voice.name.toLowerCase().includes('indonesian');
+        let label = `${voice.name} (${voice.lang})${isIndo ? ' 🇮🇩 [Rekomendasi]' : ''}`;
         let option = $('<option></option>').val(voice.name).text(label);
         
         if (selectedEnVoiceName === voice.name) {
             option.prop('selected', true);
             hasSelectedEn = true;
-        } else if (!selectedEnVoiceName && isEn && !hasSelectedEn) {
+        } else if (!selectedEnVoiceName && isIndo && !hasSelectedEn) {
             option.prop('selected', true);
             selectedEnVoiceName = voice.name;
             hasSelectedEn = true;
@@ -751,10 +803,33 @@ function populateTtsVoices() {
 }
 
 function testTtsVoice(lang) {
-    let sampleText = lang === 'en' 
-        ? "Attention. Testing the English announcer voice settings. Thank you."
-        : "Perhatian. Pengujian sistem pengemas suara bahasa Indonesia berjalan dengan baik. Terima kasih.";
-    let langCode = lang === 'en' ? 'en-US' : 'id-ID';
+    let sampleText = "";
+    let langCode = 'id-ID';
+    let voices = [];
+    if ('speechSynthesis' in window) {
+        voices = window.speechSynthesis.getVoices();
+    }
+
+    if (lang === 'en') {
+        langCode = 'en-US';
+        let targetVoice = voices.find(v => v.name === selectedEnVoiceName);
+        let voiceLang = targetVoice ? targetVoice.lang.toLowerCase() : 'id';
+        if (voiceLang.startsWith('id')) {
+            sampleText = "Perhatian. Menguji pengaturan suara announcer Bahasa Indonesia dua. Terima kasih.";
+        } else {
+            sampleText = "Attention. Testing voice announcer configuration two. Thank you.";
+        }
+    } else {
+        langCode = 'id-ID';
+        let targetVoice = voices.find(v => v.name === selectedVoiceName);
+        let voiceLang = targetVoice ? targetVoice.lang.toLowerCase() : 'id';
+        if (voiceLang.startsWith('id')) {
+            sampleText = "Perhatian. Menguji pengaturan suara announcer Bahasa Indonesia satu. Terima kasih.";
+        } else {
+            sampleText = "Attention. Testing voice announcer configuration one. Thank you.";
+        }
+    }
+
     stopAllAudio();
     speakTextSequential(sampleText, langCode, function() {
         Swal.fire({
@@ -961,6 +1036,20 @@ $(document).ready(function() {
     $('#ttsEnPitchRange').val(ttsEnPitch);
     $('#ttsEnPitchVal').text(ttsEnPitch.toFixed(1));
 
+    $('#ttsGlobalRepeatSelect').val(ttsGlobalRepeat);
+    $('#ttsGlobalDelaySelect').val(ttsGlobalDelay);
+
+    // Initial state for Voice 2 Toggle
+    let initialVoice2Enabled = localStorage.getItem('tts_en_voice_enabled') !== 'false';
+    $('#ttsEnVoiceToggle').prop('checked', initialVoice2Enabled);
+    if (initialVoice2Enabled) {
+        $('#ttsEnVoiceToggleLabel').text('Aktif');
+        $('#ttsEnVoiceSelect, #ttsEnRateRange, #ttsEnPitchRange').prop('disabled', false);
+    } else {
+        $('#ttsEnVoiceToggleLabel').text('Nonaktif');
+        $('#ttsEnVoiceSelect, #ttsEnRateRange, #ttsEnPitchRange').prop('disabled', true);
+    }
+
     // Handle range/select changes
     $('#ttsVoiceSelect').on('change', function() {
         selectedVoiceName = $(this).val();
@@ -994,6 +1083,28 @@ $(document).ready(function() {
         ttsEnPitch = parseFloat($(this).val());
         $('#ttsEnPitchVal').text(ttsEnPitch.toFixed(1));
         localStorage.setItem('tts_en_pitch', ttsEnPitch);
+    });
+
+    $('#ttsGlobalRepeatSelect').on('change', function() {
+        ttsGlobalRepeat = parseInt($(this).val());
+        localStorage.setItem('tts_global_repeat', ttsGlobalRepeat);
+    });
+
+    $('#ttsGlobalDelaySelect').on('change', function() {
+        ttsGlobalDelay = parseFloat($(this).val());
+        localStorage.setItem('tts_global_delay', ttsGlobalDelay);
+    });
+
+    $('#ttsEnVoiceToggle').on('change', function() {
+        let isEnabled = $(this).is(':checked');
+        localStorage.setItem('tts_en_voice_enabled', isEnabled);
+        if (isEnabled) {
+            $('#ttsEnVoiceToggleLabel').text('Aktif');
+            $('#ttsEnVoiceSelect, #ttsEnRateRange, #ttsEnPitchRange').prop('disabled', false);
+        } else {
+            $('#ttsEnVoiceToggleLabel').text('Nonaktif');
+            $('#ttsEnVoiceSelect, #ttsEnRateRange, #ttsEnPitchRange').prop('disabled', true);
+        }
     });
 
     refreshQueue();
@@ -1458,26 +1569,81 @@ function playQueueItemSequential(item) {
     };
 
     let parts = cleanText.split('|').map(p => p.trim());
-    if (parts.length > 1) {
-        setTimeout(() => {
-            speakTextSequential(parts[0], 'id-ID', function(err) {
-                if (err === 'not-allowed') { resetBlocked(); return; }
-                setTimeout(() => {
-                    speakTextSequential(parts[1], 'en-US', function(err2) {
-                        if (err2 === 'not-allowed') { resetBlocked(); return; }
-                        finishQueue();
-                    });
-                }, 1500);
-            });
-        }, 1500);
-    } else {
-        setTimeout(() => {
-            speakTextSequential(cleanText, 'id-ID', function(err) {
-                if (err === 'not-allowed') { resetBlocked(); return; }
-                finishQueue();
-            });
-        }, 1500);
+    
+    // Tentukan jumlah pengulangan global
+    let repeatCount = ttsGlobalRepeat;
+    if (item.type === 'announcer') {
+        // Untuk announcer manual, pengulangan sudah di-handle oleh controller/teks antrian
+        repeatCount = 1;
     }
+
+    let isVoice2Enabled = localStorage.getItem('tts_en_voice_enabled') !== 'false';
+
+    // Bangun daftar final part dan kodenya sesuai pengulangan
+    let finalParts = [];
+    let partTypes = [];
+    for (let r = 0; r < repeatCount; r++) {
+        parts.forEach((part, index) => {
+            if (isVoice2Enabled) {
+                finalParts.push(part);
+                if (item.type === 'bus') {
+                    partTypes.push((index % 2 === 0) ? 'id-ID' : 'en-US');
+                } else if (item.type === 'announcer') {
+                    partTypes.push('id-ID');
+                } else {
+                    partTypes.push((index % 2 === 0) ? 'id-ID' : 'en-US');
+                }
+            } else {
+                // Jika Suara 2 dinonaktifkan, cuman menggunakan parts pertama (index 0)
+                // Kecuali jika tipenya adalah 'announcer' manual (karena pengulangannya ada di segmen berikutnya)
+                if (index === 0 || item.type === 'announcer') {
+                    finalParts.push(part);
+                    partTypes.push('id-ID');
+                }
+            }
+        });
+    }
+
+    // Tentukan waktu jeda antar putaran (delay)
+    let delayMs = ttsGlobalDelay * 1000;
+    if (item.type === 'announcer' && item.title) {
+        let parsedDelay = parseFloat(item.title);
+        if (!isNaN(parsedDelay) && parsedDelay > 0) {
+            delayMs = parsedDelay * 1000;
+        }
+    }
+
+    const playPart = function(index) {
+        if (index >= finalParts.length) {
+            finishQueue();
+            return;
+        }
+
+        let langCode = partTypes[index] || 'id-ID';
+        let originalText = finalParts[index];
+        let spokenText = originalText;
+
+        // Cari target lang dari voice yang dipilih
+        let voices = ('speechSynthesis' in window) ? window.speechSynthesis.getVoices() : [];
+        let targetVoice = null;
+        if (langCode === 'id-ID') {
+            targetVoice = voices.find(v => v.name === selectedVoiceName);
+        } else {
+            targetVoice = voices.find(v => v.name === selectedEnVoiceName);
+        }
+        let targetLangPrefix = targetVoice ? targetVoice.lang.substring(0, 2).toLowerCase() : (langCode === 'id-ID' ? 'id' : 'en');
+        
+        spokenText = translateAnnouncement(originalText, targetLangPrefix);
+
+        setTimeout(() => {
+            speakTextSequential(spokenText, langCode, function(err) {
+                if (err === 'not-allowed') { resetBlocked(); return; }
+                playPart(index + 1);
+            });
+        }, index === 0 ? 1500 : delayMs);
+    };
+
+    playPart(0);
 }
 
 function translateAnnouncement(text, targetLangPrefix) {
@@ -1486,6 +1652,7 @@ function translateAnnouncement(text, targetLangPrefix) {
 
     const translations = {
         bus_entrance: {
+            id: "Perhatian. Bus {po} dengan nomor polisi {plat} telah memasuki {area}. Terima kasih.",
             ar: "انتباه. دخلت الحافلة {po} ذات لوحة الترخيص {plat} إلى {area}. شكرًا لك.",
             ja: "ご案内いたします。{po}、ナンバープレート{plat}のバスが{area}に入りました。ありがとうございました。",
             zh: "请注意。车牌号为 {plat} 的 {po} 客车已进入 {area}。谢谢。",
@@ -1496,6 +1663,7 @@ function translateAnnouncement(text, targetLangPrefix) {
         },
         areas: {
             "the arrival area": {
+                id: "area kedatangan",
                 ar: "منطقة الوصول",
                 ja: "到着エリア",
                 zh: "到达区",
@@ -1505,6 +1673,7 @@ function translateAnnouncement(text, targetLangPrefix) {
                 ko: "도착 구역"
             },
             "the laying-over area": {
+                id: "area pengendapan",
                 ar: "منطقة الانتظار",
                 ja: "待機エリア",
                 zh: "停放区",
@@ -1514,15 +1683,17 @@ function translateAnnouncement(text, targetLangPrefix) {
                 ko: "계류 구역"
             },
             "the departure area": {
+                id: "area keberangkatan",
                 ar: "منطقة المغادرة",
                 ja: "出発エリア",
                 zh: "出发区",
                 es: "el área de salida",
                 fr: "la zone de départ",
                 de: "den Abfahrtsbereich",
-                ko: "출발 구역"
+                ko: "출val 구역"
             },
             "the terminal area": {
+                id: "area terminal",
                 ar: "منطقة المحطة",
                 ja: "ターミナルエリア",
                 zh: "终点站区",
@@ -1533,6 +1704,7 @@ function translateAnnouncement(text, targetLangPrefix) {
             }
         },
         prayer_reminder: {
+            id: "Perhatian, waktu sholat {prayer} akan segera tiba dalam 10 menit. Silakan bersiap menuju masjid terminal.",
             ar: "انتباه، سيحين وقت صلاة {prayer} خلال 10 دقائق. يرجى الاستعداد للتوجه إلى مسجد المحطة.",
             ja: "ご案内いたします。あと10分で{prayer}の礼拝時間になります。ターミナル内のモスクへ移動する準備をしてください。",
             zh: "请注意，{prayer} 的礼拜时间将在10分钟后到来。请准备前往终点站清真寺。",
@@ -1542,7 +1714,8 @@ function translateAnnouncement(text, targetLangPrefix) {
             ko: "알려드립니다. 10분 후에 {prayer} 예배 시간이 시작됩니다. 터미널 사원으로 이동할 준비를 해주시기 바랍니다."
         },
         prayer_arrived: {
-            ar: "إلى جميع الركاب، حان وقت صلاة {prayer}. للراغبين في أداء الصلاة، تتوفر مرافق مسجد مريحة في الطابق الأول من المحطة. شكراً لكم.",
+            id: "Kepada seluruh penumpang, waktu sholat {prayer} telah tiba. Bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.",
+            ar: "إلى جميع الركاب، حان وقت صلاة {prayer}. للراغبين في أداء الصلاة، تتوفر مرافق masjid مريحة في الطابق الأول من المحطة. شكراً لكم.",
             ja: "乗客の皆様、{prayer}の礼拝時間になりました。礼拝を行いたい方は、ターミナルの1階に快適なモスクがございます。ありがとうございました。",
             zh: "各位旅客，{prayer} 的礼拜时间已到。需要礼拜的旅客，终点站一楼设有舒适的清真寺设施。谢谢。",
             es: "A todos los pasajeros, el tiempo de oración para {prayer} ha llegado. Para aquellos que deseen realizar la oración, hay una cómoda mezquita disponible en el primer piso de la terminal. Gracias.",
@@ -1551,6 +1724,7 @@ function translateAnnouncement(text, targetLangPrefix) {
             ko: "승객 여러분께 알려드립니다. {prayer} 예배 시간이 되었습니다. 예배를 드리고자 하시는 분들을 위해 터미널 1층에 편안한 사원 시설이 마련되어 있습니다. 감사합니다."
         },
         prayer_general: {
+            id: "Kepada seluruh penumpang, bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.",
             ar: "إلى جميع الركاب، للراغبين في أداء الصلاة، تتوفر مرافق مسجد مريحة في الطابق الأول من المحطة. شكراً لكم.",
             ja: "乗客の皆様、礼拝を行いたい方は、ターミナルの1階に快適なモスクがございます。ありがとうございました。",
             zh: "各位旅客，需要礼拜的旅客，终点站一楼设有舒适的清真寺设施。谢谢。",
@@ -1559,6 +1733,7 @@ function translateAnnouncement(text, targetLangPrefix) {
             de: "An alle Fahrgäste, für diejenigen, die beten möchten, steht im 1. Stock des Terminals eine komfortable Moschee zur Verfügung. Vielen Dank.",
             ko: "승객 여러분께 알려드립니다. 예배를 드리고자 하시는 분들을 위해 터미널 1층에 편안한 사원 시설이 마련되어 있습니다. 감사합니다."
         }
+
     };
 
     let busRegex = /Attention\.\s+Bus\s+(.+?)\s+with\s+license\s+plate\s+number\s+(.+?)\s+has\s+entered\s+(the\s+arrival\s+area|the\s+laying-over\s+area|the\s+departure\s+area|the\s+terminal\s+area)\.\s+Thank\s+you\./i;
@@ -1679,7 +1854,7 @@ function speakTextSequential(text, langCode, onComplete) {
 
             const utterance = new SpeechSynthesisUtterance(spokenText);
             utterance.lang = voiceLang;
-            if (voiceLang.substring(0, 2).toLowerCase() === 'en' || (targetVoice && targetVoice.lang.substring(0, 2).toLowerCase() !== 'id')) {
+            if (langCode.substring(0, 2).toLowerCase() === 'en') {
                 utterance.rate = ttsEnRate;
                 utterance.pitch = ttsEnPitch;
             } else {
@@ -2046,7 +2221,7 @@ function speakText(text, langCode, callback) {
 
     const utterance = new SpeechSynthesisUtterance(spokenText);
     utterance.lang = voiceLang;
-    if (voiceLang.substring(0, 2).toLowerCase() === 'en' || (targetVoice && targetVoice.lang.substring(0, 2).toLowerCase() !== 'id')) {
+    if (langCode.substring(0, 2).toLowerCase() === 'en') {
         utterance.rate = ttsEnRate;
         utterance.pitch = ttsEnPitch;
     } else {

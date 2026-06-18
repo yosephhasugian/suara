@@ -68,19 +68,32 @@ public function index() {
         $po = $this->input->post('po', TRUE);
         $jurusan = $this->input->post('jurusan', TRUE);
         $pintu = $this->input->post('pintu', TRUE);
+        $repeat = intval($this->input->post('repeat', TRUE));
+        if ($repeat < 1) {
+            $repeat = 1;
+        }
+        $delay = $this->input->post('delay', TRUE);
+        if (!$delay || !is_numeric($delay)) {
+            $delay = '1.5';
+        }
 
         $text_id = sprintf(
             "Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama %s. Untuk penumpang bus %s tujuan %s, ditunggu kehadiran Anda di pintu %s, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.",
             $penumpang, $po, $jurusan, $pintu
         );
 
-        $text_en = sprintf(
-            "Your attention please. This is a call for passenger %s. For passengers of bus %s bound for %s, please report to gate %s immediately, as your bus is about to depart. Thank you.",
-            $penumpang, $po, $jurusan, $pintu
-        );
+        // Ulangi teks sebanyak $repeat kali
+        $text_array = [];
+        for ($i = 0; $i < $repeat; $i++) {
+            $text_array[] = $text_id;
+        }
+        $text = implode(" | ", $text_array);
 
-        $text = $text_id . " | " . $text_en;
         $id = $this->Audio_model->create_queue_item('announcer', $text, 2);
+        
+        // Simpan waktu jeda (delay) ke kolom title
+        $this->db->where('id', $id)->update('audio_queue', ['title' => $delay]);
+
         $this->output->set_content_type('application/json')->set_output(json_encode(['status'=>'ok','id'=>$id]));
     }
 
