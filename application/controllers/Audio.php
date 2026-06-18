@@ -204,23 +204,32 @@ public function index() {
 
     // ✅ POST: Pengumuman cepat / ads manual
     public function add_ads() {
-    $text = $this->input->post('text', TRUE);
+        $text = $this->input->post('text', TRUE);
+        $repeat = $this->input->post('repeat', TRUE) ?: 1;
+        $delay = $this->input->post('delay', TRUE) ?: 1.5;
 
-    if(!$text) {
+        if(!$text) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Text kosong'
+            ]);
+            return;
+        }
+
+        // Ulangi teks pengumuman cepat sesuai jumlah putar yang dipilih
+        $repeated_text = implode(' | ', array_fill(0, $repeat, $text));
+
+        $id = $this->Audio_model->create_queue_item('ads', $repeated_text, 4);
+
+        if ($id) {
+            $this->db->where('id', $id)->update('audio_queue', ['title' => $delay]);
+        }
+
         echo json_encode([
-            'status' => 'error',
-            'message' => 'Text kosong'
+            'status' => 'ok',
+            'id' => $id
         ]);
-        return;
     }
-
-    $id = $this->Audio_model->create_queue_item('ads', $text, 4);
-
-    echo json_encode([
-        'status' => 'ok',
-        'id' => $id
-    ]);
-}
 
     // ✅ POST: Tambah YouTube ke playlist
     public function add_youtube_music() {

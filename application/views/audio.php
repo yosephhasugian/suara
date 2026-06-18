@@ -601,12 +601,37 @@
             <i class="bi bi-megaphone-fill me-1"></i>📢 Pengumuman Cepat
         </div>
         <div class="card-body py-2">
-            <form id="formQuickAds" class="d-flex gap-2">
-                <input type="text" class="form-control form-control-sm" name="text"
-                       placeholder="Ketik pesan singkat untuk diumumkan..." required>
-                <button type="submit" class="btn btn-warning btn-sm">
-                    <i class="bi bi-send me-1"></i>Kirim
-                </button>
+            <form id="formQuickAds" class="d-flex flex-column gap-2">
+                <div class="d-flex gap-2">
+                    <input type="text" class="form-control form-control-sm" name="text"
+                           placeholder="Ketik pesan singkat untuk diumumkan..." required>
+                    <button type="submit" class="btn btn-warning btn-sm" style="white-space: nowrap;">
+                        <i class="bi bi-send me-1"></i>Kirim
+                    </button>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small mb-0" style="font-size: 0.75rem;">🔁 Jumlah Putar</label>
+                        <select class="form-select form-select-sm" name="repeat" required>
+                            <option value="1" selected>1 Kali</option>
+                            <option value="2">2 Kali</option>
+                            <option value="3">3 Kali</option>
+                            <option value="4">4 Kali</option>
+                            <option value="5">5 Kali</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small mb-0" style="font-size: 0.75rem;">⏱️ Jeda (Detik)</label>
+                        <select class="form-select form-select-sm" name="delay" required>
+                            <option value="1">1 Detik</option>
+                            <option value="1.5" selected>1.5 Detik</option>
+                            <option value="2">2 Detik</option>
+                            <option value="3">3 Detik</option>
+                            <option value="4">4 Detik</option>
+                            <option value="5">5 Detik</option>
+                        </select>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -1154,11 +1179,13 @@ $(document).ready(function() {
     $('#formQuickAds').on('submit', function(e) {
         e.preventDefault();
         let text = $(this).find('input[name="text"]').val();
+        let repeat = $(this).find('select[name="repeat"]').val();
+        let delay = $(this).find('select[name="delay"]').val();
         if(!text) {
             Swal.fire('⚠️ Kosong!', 'Isi dulu', 'warning');
             return;
         }
-        ciPost('audio/add_ads', Object.assign({ text: text }, getCsrfData()), function(res) {
+        ciPost('audio/add_ads', Object.assign({ text: text, repeat: repeat, delay: delay }, getCsrfData()), function(res) {
             if(res?.status === 'ok') {
                 Swal.fire('✅ Berhasil!', 'Masuk queue', 'success');
                 $('#formQuickAds')[0].reset();
@@ -1572,8 +1599,8 @@ function playQueueItemSequential(item) {
     
     // Tentukan jumlah pengulangan global
     let repeatCount = ttsGlobalRepeat;
-    if (item.type === 'announcer') {
-        // Untuk announcer manual, pengulangan sudah di-handle oleh controller/teks antrian
+    if (item.type === 'announcer' || item.type === 'ads') {
+        // Untuk announcer manual dan ads manual (pengumuman cepat), pengulangan sudah di-handle oleh controller/teks antrian
         repeatCount = 1;
     }
 
@@ -1588,15 +1615,15 @@ function playQueueItemSequential(item) {
                 finalParts.push(part);
                 if (item.type === 'bus') {
                     partTypes.push((index % 2 === 0) ? 'id-ID' : 'en-US');
-                } else if (item.type === 'announcer') {
+                } else if (item.type === 'announcer' || item.type === 'ads') {
                     partTypes.push('id-ID');
                 } else {
                     partTypes.push((index % 2 === 0) ? 'id-ID' : 'en-US');
                 }
             } else {
                 // Jika Suara 2 dinonaktifkan, cuman menggunakan parts pertama (index 0)
-                // Kecuali jika tipenya adalah 'announcer' manual (karena pengulangannya ada di segmen berikutnya)
-                if (index === 0 || item.type === 'announcer') {
+                // Kecuali jika tipenya adalah 'announcer' manual atau 'ads' manual
+                if (index === 0 || item.type === 'announcer' || item.type === 'ads') {
                     finalParts.push(part);
                     partTypes.push('id-ID');
                 }
@@ -1606,7 +1633,7 @@ function playQueueItemSequential(item) {
 
     // Tentukan waktu jeda antar putaran (delay)
     let delayMs = ttsGlobalDelay * 1000;
-    if (item.type === 'announcer' && item.title) {
+    if ((item.type === 'announcer' || item.type === 'ads') && item.title) {
         let parsedDelay = parseFloat(item.title);
         if (!isNaN(parsedDelay) && parsedDelay > 0) {
             delayMs = parsedDelay * 1000;
