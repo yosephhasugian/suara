@@ -43,6 +43,40 @@
             align-items: center;
             gap: 10px;
         }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        /* 🚌 BUS COUNTER BADGE */
+        .bus-counter {
+            background: rgba(23, 162, 184, 0.15);
+            border: 1px solid rgba(23, 162, 184, 0.3);
+            color: #fff;
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-family: 'Arial', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(23, 162, 184, 0.2);
+            animation: pulse-counter 2.5s infinite;
+        }
+        @keyframes pulse-counter {
+            0%, 100% { border-color: rgba(23, 162, 184, 0.3); box-shadow: 0 0 15px rgba(23, 162, 184, 0.2); }
+            50% { border-color: rgba(0, 255, 135, 0.6); box-shadow: 0 0 25px rgba(23, 162, 184, 0.4); }
+        }
+        .bus-counter i { color: #17a2b8; font-size: 16px; }
+        .bus-counter .number { 
+            font-size: 24px; 
+            color: #17a2b8; 
+            font-weight: 900;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 0 0 10px rgba(23, 162, 184, 0.3);
+        }
         .header-icon {
             font-size: 32px;
             animation: float-icon 3s ease-in-out infinite;
@@ -303,12 +337,19 @@
 
 <!-- HEADER -->
 <div class="header">
-    <h1>
-        <span class="header-icon">
-            <i class="fas fa-bus"></i><i class="fas fa-arrow-down text-success" style="font-size: 0.6em; margin-left: -8px; vertical-align: bottom;"></i>
-        </span>
-        <?= $area_label ?? 'AREA KEDATANGAN' ?> - TERMINAL PULO GEBANG
-    </h1>
+    <div class="header-left">
+        <h1>
+            <span class="header-icon">
+                <i class="fas fa-bus"></i><i class="fas fa-arrow-down text-success" style="font-size: 0.6em; margin-left: -8px; vertical-align: top;"></i>
+            </span>
+            <?= $area_label ?? 'AREA KEDATANGAN' ?> - TERMINAL PULO GEBANG
+        </h1>
+        <div class="bus-counter">
+            <i class="fas fa-bus"></i>
+            <span class="number" id="busCount">0</span>
+            <small style="font-size:11px; opacity:0.8; font-weight:800; letter-spacing:0.5px">BUS HARI INI</small>
+        </div>
+    </div>
     <div id="tanggal">
         <div id="dateText"></div>
         <div class="time" id="timeText">--:--:--</div>
@@ -399,6 +440,8 @@ function loadTV() {
         let html = '';
         let no = 1;
 
+        let totalCount = 0;
+
         if (!res || res.length === 0) {
             html = `<tr>
                 <td colspan="5">
@@ -410,23 +453,24 @@ function loadTV() {
                 </td>
             </tr>`;
         } else {
-            res.forEach(b => {
-                // Filter plat nomor kosong
-                if (b.plat_nomor && b.plat_nomor.trim() !== "") {
-                    let jam = formatTime(b.created_at);
-                    
-                    html += `<tr>
-                        <td class="text-muted" style="font-size:18px">${no++}</td>
-                        <td class="plat-nomor">${b.plat_nomor}</td>
-                        <td class="text-start ps-4 po-name">${b.nama_po || '-'}</td>
-                        <td class="tujuan text-start ps-4">${b.tujuan || 'Belum ditentukan'}</td>
-                        <td class="waktu">${jam}</td>
-                    </tr>`;
-                }
+            let validBuses = res.filter(b => b.plat_nomor && b.plat_nomor.trim() !== "");
+            totalCount = validBuses.length;
+            
+            validBuses.forEach(b => {
+                let jam = formatTime(b.created_at);
+                
+                html += `<tr>
+                    <td class="text-muted" style="font-size:18px">${no++}</td>
+                    <td class="plat-nomor">${b.plat_nomor}</td>
+                    <td class="text-start ps-4 po-name">${b.nama_po || '-'}</td>
+                    <td class="tujuan text-start ps-4">${b.tujuan || 'Belum ditentukan'}</td>
+                    <td class="waktu">${jam}</td>
+                </tr>`;
             });
         }
         
         $('#tvTable').html(html);
+        $('#busCount').text(totalCount);
         
         // Hide refresh indicator after load
         setTimeout(() => {

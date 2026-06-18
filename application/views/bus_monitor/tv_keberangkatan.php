@@ -43,6 +43,40 @@
             align-items: center;
             gap: 10px;
         }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        /* 🚌 BUS COUNTER BADGE */
+        .bus-counter {
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #fff;
+            padding: 6px 20px;
+            border-radius: 50px;
+            font-family: 'Arial', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
+            animation: pulse-counter 2.5s infinite;
+        }
+        @keyframes pulse-counter {
+            0%, 100% { border-color: rgba(255, 193, 7, 0.3); box-shadow: 0 0 15px rgba(255, 193, 7, 0.2); }
+            50% { border-color: rgba(255, 220, 0, 0.6); box-shadow: 0 0 25px rgba(255, 193, 7, 0.4); }
+        }
+        .bus-counter i { color: #ffc107; font-size: 16px; }
+        .bus-counter .number { 
+            font-size: 24px; 
+            color: #ffc107; 
+            font-weight: 900;
+            font-family: 'Arial', sans-serif;
+            text-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+        }
         .header-icon {
             font-size: 32px;
             animation: float-icon 3s ease-in-out infinite;
@@ -303,12 +337,19 @@
 
 <!-- HEADER -->
 <div class="header">
-    <h1>
-        <span class="header-icon">
-            <i class="fas fa-bus"></i><i class="fas fa-arrow-up text-warning" style="font-size: 0.6em; margin-left: -8px; vertical-align: top;"></i>
-        </span>
-        AREA KEBERANGKATAN - TERMINAL PULO GEBANG
-    </h1>
+    <div class="header-left">
+        <h1>
+            <span class="header-icon">
+                <i class="fas fa-bus"></i><i class="fas fa-arrow-up text-warning" style="font-size: 0.6em; margin-left: -8px; vertical-align: top;"></i>
+            </span>
+            AREA KEBERANGKATAN - TERMINAL PULO GEBANG
+        </h1>
+        <div class="bus-counter">
+            <i class="fas fa-bus"></i>
+            <span class="number" id="busCount">0</span>
+            <small style="font-size:11px; opacity:0.8; font-weight:800; letter-spacing:0.5px">BUS HARI INI</small>
+        </div>
+    </div>
     <div id="tanggal">
         <div id="dateText"></div>
         <div class="time" id="timeText">--:--:--</div>
@@ -399,21 +440,24 @@ function loadTV() {
         let html = '';
         let no = 1;
 
+        let totalCount = 0;
+
         if (!res || res.length === 0) {
             html = `<tr>
                 <td colspan="5">
                     <div class="empty-state">
                         <i class="fas fa-bus"></i>
                         <p>BELUM ADA BUS SIAP BERANGKAT</p>
-                        <small class="text-muted">Bus akan muncul otomatis saat dipindah ke area keberangkatan</small>
+                        <small class="text-muted">Bus akan muncul otomatis saat dipindah to area keberangkatan</small>
                     </div>
                 </td>
             </tr>`;
         } else {
-            res.forEach(b => {
-                // Filter plat nomor kosong
+            let validBuses = res.filter(b => b.plat_nomor && b.plat_nomor.trim() !== "");
+            totalCount = validBuses.length;
+            
+            validBuses.forEach(b => {
                 if (b.plat_nomor && b.plat_nomor.trim() !== "") {
-                    // Gunakan area_updated_at jika ada (waktu pindah ke area keberangkatan), jika tidak gunakan created_at
                     let jam = formatTime(b.area_updated_at || b.created_at);
                     
                     html += `<tr>
@@ -428,6 +472,7 @@ function loadTV() {
         }
         
         $('#tvTable').html(html);
+        $('#busCount').text(totalCount);
         
         // Hide refresh indicator after load
         setTimeout(() => {
