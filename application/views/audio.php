@@ -1480,6 +1480,129 @@ function playQueueItemSequential(item) {
     }
 }
 
+function translateAnnouncement(text, targetLangPrefix) {
+    targetLangPrefix = targetLangPrefix.toLowerCase();
+    if (targetLangPrefix === 'en') return text;
+
+    const translations = {
+        bus_entrance: {
+            ar: "انتباه. دخلت الحافلة {po} ذات لوحة الترخيص {plat} إلى {area}. شكرًا لك.",
+            ja: "ご案内いたします。{po}、ナンバープレート{plat}のバスが{area}に入りました。ありがとうございました。",
+            zh: "请注意。车牌号为 {plat} 的 {po} 客车已进入 {area}。谢谢。",
+            es: "Atención. El autobús {po} con número de matrícula {plat} ha entrado en {area}. Gracias.",
+            fr: "Attention. L'autobus {po} avec le numéro de plaque d'immatriculation {plat} est entré dans {area}. Merci.",
+            de: "Achtung. Der Bus {po} mit dem Kennzeichen {plat} ist in {area} eingefahren. Vielen Dank.",
+            ko: "알려드립니다. 차량 번호 {plat}의 {po} 버스가 {area}에 진입했습니다. 감사합니다."
+        },
+        areas: {
+            "the arrival area": {
+                ar: "منطقة الوصول",
+                ja: "到着エリア",
+                zh: "到达区",
+                es: "el área de llegada",
+                fr: "la zone d'arrivée",
+                de: "den Ankunftsbereich",
+                ko: "도착 구역"
+            },
+            "the laying-over area": {
+                ar: "منطقة الانتظار",
+                ja: "待機エリア",
+                zh: "停放区",
+                es: "el área de estacionamiento",
+                fr: "la zone de stationnement",
+                de: "den Abstellbereich",
+                ko: "계류 구역"
+            },
+            "the departure area": {
+                ar: "منطقة المغادرة",
+                ja: "出発エリア",
+                zh: "出发区",
+                es: "el área de salida",
+                fr: "la zone de départ",
+                de: "den Abfahrtsbereich",
+                ko: "출발 구역"
+            },
+            "the terminal area": {
+                ar: "منطقة المحطة",
+                ja: "ターミナルエリア",
+                zh: "终点站区",
+                es: "el área de la terminal",
+                fr: "la zone du terminal",
+                de: "den Terminalbereich",
+                ko: "터미널 구역"
+            }
+        },
+        prayer_reminder: {
+            ar: "انتباه، سيحين وقت صلاة {prayer} خلال 10 دقائق. يرجى الاستعداد للتوجه إلى مسجد المحطة.",
+            ja: "ご案内いたします。あと10分で{prayer}の礼拝時間になります。ターミナル内のモスクへ移動する準備をしてください。",
+            zh: "请注意，{prayer} 的礼拜时间将在10分钟后到来。请准备前往终点站清真寺。",
+            es: "Atención, el tiempo de oración para {prayer} llegará en 10 minutos. Por favor, prepárese para dirigirse a la mezquita de la terminal.",
+            fr: "Attention, l'heure de la prière de {prayer} arrivera dans 10 minutes. Veuillez vous préparer à vous rendre à la mosquée du terminal.",
+            de: "Achtung, die Gebetszeit für {prayer} beginnt in 10 Minuten. Bitte bereiten Sie sich darauf vor, die Terminal-Moschee aufzusuchen.",
+            ko: "알려드립니다. 10분 후에 {prayer} 예배 시간이 시작됩니다. 터미널 사원으로 이동할 준비를 해주시기 바랍니다."
+        },
+        prayer_arrived: {
+            ar: "إلى جميع الركاب، حان وقت صلاة {prayer}. للراغبين في أداء الصلاة، تتوفر مرافق مسجد مريحة في الطابق الأول من المحطة. شكراً لكم.",
+            ja: "乗客の皆様、{prayer}の礼拝時間になりました。礼拝を行いたい方は、ターミナルの1階に快適なモスクがございます。ありがとうございました。",
+            zh: "各位旅客，{prayer} 的礼拜时间已到。需要礼拜的旅客，终点站一楼设有舒适的清真寺设施。谢谢。",
+            es: "A todos los pasajeros, el tiempo de oración para {prayer} ha llegado. Para aquellos que deseen realizar la oración, hay una cómoda mezquita disponible en el primer piso de la terminal. Gracias.",
+            fr: "À tous les passagers, l'heure de la prière de {prayer} est arrivée. Pour ceux qui souhaitent effectuer la prière, une mosquée confortable est disponible au 1er étage du terminal. Merci.",
+            de: "An alle Fahrgäste, die Gebetszeit für {prayer} hat begonnen. Für diejenigen, die beten möchten, steht im 1. Stock des Terminals eine komfortable Moschee zur Verfügung. Vielen Dank.",
+            ko: "승객 여러분께 알려드립니다. {prayer} 예배 시간이 되었습니다. 예배를 드리고자 하시는 분들을 위해 터미널 1층에 편안한 사원 시설이 마련되어 있습니다. 감사합니다."
+        },
+        prayer_general: {
+            ar: "إلى جميع الركاب، للراغبين في أداء الصلاة، تتوفر مرافق مسجد مريحة في الطابق الأول من المحطة. شكراً لكم.",
+            ja: "乗客の皆様、礼拝を行いたい方は、ターミナルの1階に快適なモスクがございます。ありがとうございました。",
+            zh: "各位旅客，需要礼拜的旅客，终点站一楼设有舒适的清真寺设施。谢谢。",
+            es: "A todos los pasajeros, para aquellos que deseen realizar la oración, hay una cómoda mezquita disponible en el primer piso de la terminal. Gracias.",
+            fr: "À tous les passagers, pour ceux qui souhaitent effectuer la prière, une mosquée confortable est disponible au 1er étage du terminal. Merci.",
+            de: "An alle Fahrgäste, für diejenigen, die beten möchten, steht im 1. Stock des Terminals eine komfortable Moschee zur Verfügung. Vielen Dank.",
+            ko: "승객 여러분께 알려드립니다. 예배를 드리고자 하시는 분들을 위해 터미널 1층에 편안한 사원 시설이 마련되어 있습니다. 감사합니다."
+        }
+    };
+
+    let busRegex = /Attention\.\s+Bus\s+(.+?)\s+with\s+license\s+plate\s+number\s+(.+?)\s+has\s+entered\s+(the\s+arrival\s+area|the\s+laying-over\s+area|the\s+departure\s+area|the\s+terminal\s+area)\.\s+Thank\s+you\./i;
+    let matchBus = text.match(busRegex);
+    if (matchBus) {
+        let po = matchBus[1];
+        let plat = matchBus[2];
+        let areaEn = matchBus[3].toLowerCase();
+        let template = translations.bus_entrance[targetLangPrefix];
+        if (template) {
+            let areaTrans = (translations.areas[areaEn] && translations.areas[areaEn][targetLangPrefix]) ? translations.areas[areaEn][targetLangPrefix] : areaEn;
+            return template.replace(/{po}/g, po).replace(/{plat}/g, plat).replace(/{area}/g, areaTrans);
+        }
+    }
+
+    let reminderRegex = /Attention,\s+the\s+prayer\s+time\s+for\s+(.+?)\s+will\s+arrive\s+in\s+10\s+minutes\.\s+Please\s+prepare\s+to\s+proceed\s+to\s+the\s+terminal\s+mosque\./i;
+    let matchReminder = text.match(reminderRegex);
+    if (matchReminder) {
+        let prayer = matchReminder[1];
+        let template = translations.prayer_reminder[targetLangPrefix];
+        if (template) {
+            return template.replace(/{prayer}/g, prayer);
+        }
+    }
+
+    let arrivedRegex = /To\s+all\s+passengers,\s+the\s+prayer\s+time\s+for\s+(.+?)\s+has\s+arrived\.\s+For\s+those\s+who\s+wish\s+to\s+perform\s+the\s+prayer,\s+a\s+comfortable\s+mosque\s+facility\s+is\s+available\s+on\s+the\s+1st\s+floor\s+of\s+the\s+terminal\.\s+Let\s+us\s+remain\s+diligent\s+in\s+our\s+prayers\s+during\s+your\s+journey\.\s+Thank\s+you\./i;
+    let matchArrived = text.match(arrivedRegex);
+    if (matchArrived) {
+        let prayer = matchArrived[1];
+        let template = translations.prayer_arrived[targetLangPrefix];
+        if (template) {
+            return template.replace(/{prayer}/g, prayer);
+        }
+    }
+
+    let generalPrayerRegex = /To\s+all\s+passengers,\s+for\s+those\s+who\s+wish\s+to\s+perform\s+the\s+prayer,\s+a\s+comfortable\s+mosque\s+facility\s+is\s+available\s+on\s+the\s+1st\s+floor\s+of\s+the\s+terminal\.\s+Let\s+us\s+remain\s+diligent\s+in\s+our\s+prayers\s+during\s+your\s+journey\.\s+Thank\s+you\./i;
+    if (generalPrayerRegex.test(text)) {
+        let template = translations.prayer_general[targetLangPrefix];
+        if (template) return template;
+    }
+
+    return text;
+}
+
 function speakTextSequential(text, langCode, onComplete) {
     if (typeof langCode === 'function') {
         onComplete = langCode;
@@ -1529,17 +1652,10 @@ function speakTextSequential(text, langCode, onComplete) {
     
     function startSpeaking(useFallbackVoice = false) {
         try {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = langCode;
-            if (langCode.substring(0, 2).toLowerCase() === 'en') {
-                utterance.rate = ttsEnRate;
-                utterance.pitch = ttsEnPitch;
-            } else {
-                utterance.rate = ttsRate;
-                utterance.pitch = ttsPitch;
-            }
-            
+            let spokenText = text;
             let targetVoice = null;
+            let voiceLang = langCode;
+
             if (!useFallbackVoice && voices && voices.length > 0) {
                 if (langCode === 'id-ID' && selectedVoiceName) {
                     targetVoice = voices.find(v => v.name === selectedVoiceName);
@@ -1550,6 +1666,27 @@ function speakTextSequential(text, langCode, onComplete) {
                     targetVoice = voices.find(v => v.lang.toLowerCase().includes(langCode.substring(0, 2).toLowerCase()) || v.name.toLowerCase().includes(langCode === 'id-ID' ? 'indonesian' : 'english'));
                 }
             }
+
+            if (targetVoice) {
+                voiceLang = targetVoice.lang;
+                if (langCode.substring(0, 2).toLowerCase() === 'en') {
+                    let voiceLangPrefix = targetVoice.lang.substring(0, 2).toLowerCase();
+                    if (voiceLangPrefix !== 'en') {
+                        spokenText = translateAnnouncement(text, voiceLangPrefix);
+                    }
+                }
+            }
+
+            const utterance = new SpeechSynthesisUtterance(spokenText);
+            utterance.lang = voiceLang;
+            if (voiceLang.substring(0, 2).toLowerCase() === 'en' || (targetVoice && targetVoice.lang.substring(0, 2).toLowerCase() !== 'id')) {
+                utterance.rate = ttsEnRate;
+                utterance.pitch = ttsEnPitch;
+            } else {
+                utterance.rate = ttsRate;
+                utterance.pitch = ttsPitch;
+            }
+            
             if (targetVoice) {
                 utterance.voice = targetVoice;
             }
@@ -1882,17 +2019,12 @@ function speakText(text, langCode, callback) {
     langCode = langCode || 'id-ID';
 
     if (!('speechSynthesis' in window)) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = langCode;
-    if (langCode.substring(0, 2).toLowerCase() === 'en') {
-        utterance.rate = ttsEnRate;
-        utterance.pitch = ttsEnPitch;
-    } else {
-        utterance.rate = ttsRate;
-        utterance.pitch = ttsPitch;
-    }
+    
     let voices = speechSynthesis.getVoices();
     let targetVoice = null;
+    let voiceLang = langCode;
+    let spokenText = text;
+
     if (langCode === 'id-ID' && selectedVoiceName) {
         targetVoice = voices.find(v => v.name === selectedVoiceName);
     } else if (langCode.substring(0, 2).toLowerCase() === 'en' && selectedEnVoiceName) {
@@ -1900,6 +2032,26 @@ function speakText(text, langCode, callback) {
     }
     if (!targetVoice) {
         targetVoice = voices.find(v => v.lang.toLowerCase().includes(langCode.substring(0, 2).toLowerCase()) || v.name.toLowerCase().includes(langCode === 'id-ID' ? 'indonesian' : 'english'));
+    }
+
+    if (targetVoice) {
+        voiceLang = targetVoice.lang;
+        if (langCode.substring(0, 2).toLowerCase() === 'en') {
+            let voiceLangPrefix = targetVoice.lang.substring(0, 2).toLowerCase();
+            if (voiceLangPrefix !== 'en') {
+                spokenText = translateAnnouncement(text, voiceLangPrefix);
+            }
+        }
+    }
+
+    const utterance = new SpeechSynthesisUtterance(spokenText);
+    utterance.lang = voiceLang;
+    if (voiceLang.substring(0, 2).toLowerCase() === 'en' || (targetVoice && targetVoice.lang.substring(0, 2).toLowerCase() !== 'id')) {
+        utterance.rate = ttsEnRate;
+        utterance.pitch = ttsEnPitch;
+    } else {
+        utterance.rate = ttsRate;
+        utterance.pitch = ttsPitch;
     }
     if (targetVoice) utterance.voice = targetVoice;
     let finished = false;
