@@ -1013,7 +1013,7 @@ function checkPrayerSchedule() {
         if (isSameMinute(now, time)) {
             if (lastPrayerTrigger[name] === time) return;
             lastPrayerTrigger[name] = time;
-            let text_id = `Kepada seluruh penumpang, waktu sholat ${name} telah tiba. Bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.`;
+            let text_id = `Kepada seluruh penumpang, waktu sholat ${name} telah tiba. Bagi Anda yang ingin menunaikan ibadah shalat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.`;
             let text_en = `To all passengers, the prayer time for ${nameCap} has arrived. For those who wish to perform the prayer, a comfortable mosque facility is available on the 1st floor of the terminal. Let us remain diligent in our prayers during your journey. Thank you.`;
             let text = text_id + " | " + text_en;
             ciPost('audio/add_prayer_announce', { text: text }, function(res){
@@ -1424,7 +1424,7 @@ function updateAnnouncerPreview() {
 function addPrayerAnnounce() {
     Swal.fire({
         title: '🕌 Siarkan Pengumuman Sholat?',
-        html: 'Pesan:<br><em>"Kepada Bapak/Ibu penumpang, bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih."</em>',
+        html: 'Pesan:<br><em>"Kepada Bapak/Ibu penumpang, bagi Anda yang ingin menunaikan ibadah shalat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih."</em>',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: '✅ Ya, Siarkan',
@@ -1432,7 +1432,7 @@ function addPrayerAnnounce() {
     }).then(r => {
         if(r.isConfirmed) {
             Swal.fire({title: 'Mengirim...', didOpen: () => Swal.showLoading()});
-            let text_id = "Kepada Bapak/Ibu penumpang, bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.";
+            let text_id = "Kepada Bapak/Ibu penumpang, bagi Anda yang ingin menunaikan ibadah shalat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.";
             let text_en = "To all passengers, for those who wish to perform the prayer, a comfortable mosque facility is available on the 1st floor of the terminal. Let us remain diligent in our prayers during your journey. Thank you.";
             let text = text_id + " | " + text_en;
             ciPost('audio/add_prayer_announce', {text: text, ...getCsrfData()}, function(res) {
@@ -1778,7 +1778,7 @@ function translateAnnouncement(text, targetLangPrefix) {
             ko: "알려드립니다. 10분 후에 {prayer} 예배 시간이 시작됩니다. 터미널 사원으로 이동할 준비를 해주시기 바랍니다."
         },
         prayer_arrived: {
-            id: "Kepada seluruh penumpang, waktu sholat {prayer} telah tiba. Bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.",
+            id: "Kepada seluruh penumpang, waktu sholat {prayer} telah tiba. Bagi Anda yang ingin menunaikan ibadah shalat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.",
             ar: "إلى جميع الركاب، حان وقت صلاة {prayer}. للراغبين في أداء الصلاة، تتوفر مرافق masjid مريحة في الطابق الأول من المحطة. شكراً لكم.",
             ja: "乗客の皆様、{prayer}の礼拝時間になりました。礼拝を行いたい方は、ターミナルの1階に快適なモスクがございます。ありがとうございました。",
             zh: "各位旅客，{prayer} 的礼拜时间已到。需要礼拜的旅客，终点站一楼设有舒适的清真寺设施。谢谢。",
@@ -1788,7 +1788,7 @@ function translateAnnouncement(text, targetLangPrefix) {
             ko: "승객 여러분께 알려드립니다. {prayer} 예배 시간이 되었습니다. 예배를 드리고자 하시는 분들을 위해 터미널 1층에 편안한 사원 시설이 마련되어 있습니다. 감사합니다."
         },
         prayer_general: {
-            id: "Kepada seluruh penumpang, bagi Anda yang ingin menunaikan ibadah salat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.",
+            id: "Kepada seluruh penumpang, bagi Anda yang ingin menunaikan ibadah shalat, tersedia fasilitas masjid yang nyaman di Lantai 1 Terminal. Mari tetap menjaga ketepatan waktu ibadah di sela perjalanan Anda. Terima kasih.",
             ar: "إلى جميع الركاب، للراغبين في أداء الصلاة، تتوفر مرافق مسجد مريحة في الطابق الأول من المحطة. شكراً لكم.",
             ja: "乗客の皆様、礼拝を行いたい方は、ターミナルの1階に快適なモスクがございます。ありがとうございました。",
             zh: "各位旅客，需要礼拜的旅客，终点站一楼设有舒适的清真寺设施。谢谢。",
