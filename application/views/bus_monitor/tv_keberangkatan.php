@@ -67,7 +67,7 @@
         /* ================= TABLE CONTAINER ================= */
         .table-container {
             padding: 15px;
-            height: calc(100vh - 145px); /* Adjusted for running ticker */
+            height: calc(100vh - 70px);
             overflow: hidden;
         }
         .table-wrapper {
@@ -220,7 +220,7 @@
         /* ================= REFRESH INDICATOR ================= */
         .refresh-indicator {
             position: fixed;
-            bottom: 60px;
+            bottom: 15px;
             right: 20px;
             background: rgba(23, 162, 184, 0.9);
             color: white;
@@ -243,58 +243,6 @@
         }
         .refresh-indicator.hidden {
             display: none;
-        }
-
-        /* ================= DYNAMIC RUNNING TICKER ================= */
-        .ticker-wrap {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 48px;
-            background: rgba(10, 10, 20, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            z-index: 100;
-        }
-        .ticker-title {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: #17a2b8;
-            padding: 0 25px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            font-weight: 900;
-            font-size: 14px;
-            letter-spacing: 1px;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
-            z-index: 2;
-            white-space: nowrap;
-        }
-        .ticker {
-            display: flex;
-            white-space: nowrap;
-            padding-left: 100%;
-            animation: marquee 50s linear infinite;
-        }
-        @keyframes marquee {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
-        }
-        .ticker-item {
-            display: inline-block;
-            padding: 0 35px;
-            font-size: 15px;
-            font-weight: 700;
-            color: #e2e8f0;
-        }
-        .ticker-item i {
-            color: #ffc107;
-            margin-right: 8px;
         }
     </style>
 </head>
@@ -319,11 +267,11 @@
         <table class="table table-sm">
             <thead>
                 <tr>
-                    <th width="5%">NO</th>
+                    <th width="4%">NO</th>
                     <th width="18%">PLAT NOMOR</th>
-                    <th width="30%">NAMA PERUSAHAAN (PO)</th>
-                    <th width="27%">TUJUAN AKHIR</th>
-                    <th width="10%">JAM MASUK AREA</th>
+                    <th width="32%">NAMA PERUSAHAAN (PO)</th>
+                    <th width="26%">TUJUAN</th>
+                    <th width="10%">JAM MASUK</th>
                     <th width="10%">STATUS</th>
                 </tr>
             </thead>
@@ -334,24 +282,15 @@
     </div>
 </div>
 
-<!-- DYNAMIC RUNNING TICKER -->
-<div class="ticker-wrap">
-    <div class="ticker-title"><i class="fas fa-bullhorn mr-2"></i> INFO TERMINAL</div>
-    <div class="ticker">
-        <div class="ticker-item"><i class="fas fa-check-circle"></i> Penumpang area keberangkatan harap mempersiapkan tiket resmi Anda dan bersiap-siap menuju pintu keberangkatan bus masing-masing.</div>
-        <div class="ticker-item"><i class="fas fa-info-circle"></i> INFO BARANG TEMUAN: Petugas rutin menginput barang tertinggal di menu Lost & Found. Bagi penumpang yang merasa kehilangan barang, silakan memeriksa ke Pusat Layanan Informasi Terminal.</div>
-        <div class="ticker-item"><i class="fas fa-exclamation-triangle"></i> Jagalah barang bawaan Anda selama menunggu di ruang tunggu terminal. Anak-anak harap dalam pengawasan orang tua.</div>
-    </div>
-</div>
-
 <!-- REFRESH INDICATOR -->
-<div class="refresh-indicator hidden" id="refreshIndicator">
+<div class="refresh-indicator" id="refreshIndicator">
     <i class="fas fa-sync-alt"></i>
     <span>Updating...</span>
 </div>
 
 <!-- SCRIPTS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
 <script>
 const BASE_URL = "<?= base_url(); ?>";
