@@ -290,7 +290,7 @@
             display: flex;
             white-space: nowrap;
             padding-left: 100%;
-            animation: marquee 50s linear infinite;
+            animation: marquee 90s linear infinite;
         }
         @keyframes marquee {
             0% { transform: translate3d(0, 0, 0); }
