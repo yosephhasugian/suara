@@ -67,7 +67,7 @@
         /* ================= TABLE CONTAINER ================= */
         .table-container {
             padding: 15px;
-            height: calc(100vh - 70px);
+            height: calc(100vh - 120px);
             overflow: hidden;
         }
         .table-wrapper {
@@ -220,7 +220,7 @@
         /* ================= REFRESH INDICATOR ================= */
         .refresh-indicator {
             position: fixed;
-            bottom: 15px;
+            bottom: 60px;
             right: 20px;
             background: rgba(23, 162, 184, 0.9);
             color: white;
@@ -243,6 +243,58 @@
         }
         .refresh-indicator.hidden {
             display: none;
+        }
+
+        /* ================= DYNAMIC RUNNING TICKER ================= */
+        .ticker-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 48px;
+            background: rgba(10, 10, 20, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            z-index: 100;
+        }
+        .ticker-title {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            padding: 0 25px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-weight: 900;
+            font-size: 14px;
+            letter-spacing: 1px;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            z-index: 2;
+            white-space: nowrap;
+        }
+        .ticker {
+            display: flex;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: marquee 50s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+        .ticker-item {
+            display: inline-block;
+            padding: 0 35px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .ticker-item i {
+            color: #ffc107;
+            margin-right: 8px;
         }
     </style>
 </head>
@@ -288,6 +340,16 @@
 <div class="refresh-indicator" id="refreshIndicator">
     <i class="fas fa-sync-alt"></i>
     <span>Updating...</span>
+</div>
+
+<!-- DYNAMIC RUNNING TICKER -->
+<div class="ticker-wrap">
+    <div class="ticker-title"><i class="fas fa-bullhorn mr-2"></i> INFO TERMINAL</div>
+    <div class="ticker">
+        <div class="ticker-item"><i class="fas fa-check-circle"></i> Selamat Datang di Terminal Terpadu Pulo Gebang - Utamakan keselamatan dan kenyamanan bersama selama di perjalanan.</div>
+        <div class="ticker-item"><i class="fas fa-info-circle"></i> INFO BARANG TEMUAN: Petugas rutin menginput barang tertinggal di menu Lost & Found. Bagi penumpang yang merasa kehilangan barang, silakan memeriksa ke Pusat Layanan Informasi Terminal.</div>
+        <div class="ticker-item"><i class="fas fa-exclamation-triangle"></i> Hati-hati terhadap segala bentuk penipuan. Harap membeli tiket resmi hanya di loket Agen PO resmi atau aplikasi pemesanan tiket resmi.</div>
+    </div>
 </div>
 
 <!-- SCRIPTS -->
