@@ -305,17 +305,16 @@
             position: fixed;
             bottom: 60px;
             right: 20px;
-            background: rgba(0, 123, 255, 0.85);
+            background: rgba(23, 162, 184, 0.9);
             color: white;
-            padding: 6px 15px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 700;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.4);
             z-index: 100;
         }
         .refresh-indicator i { animation: spin 2s linear infinite; }
@@ -413,7 +412,6 @@ function formatTime(timestamp, areaUpdated) {
 function loadTV() {
     $('#refreshIndicator').removeClass('hidden');
     $.get(BASE_URL + 'bus_monitor/get_tv_keberangkatan', function(res) {
-        $('#refreshIndicator').addClass('hidden');
         let html = '';
         let no = 1;
         let totalCount = 0;
@@ -445,8 +443,15 @@ function loadTV() {
         $('#tvTable').html(html);
         $('#busCount').text(totalCount);
         
+        // Hide refresh indicator after load
+        setTimeout(() => {
+            $('#refreshIndicator').addClass('hidden');
+        }, 800); // Tunda 800ms agar animasi putar terlihat halus
+        
     }, 'json').fail(function(xhr) {
-        $('#refreshIndicator').addClass('hidden');
+        setTimeout(() => {
+            $('#refreshIndicator').addClass('hidden');
+        }, 800);
         console.error("❌ Error:", xhr.status);
         $('#tvTable').html(`<tr><td colspan="6" class="text-danger p-4 text-center">
             <i class="fas fa-exclamation-triangle me-2"></i>Gagal memuat data dari server
