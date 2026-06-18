@@ -142,12 +142,12 @@
 
         /* ================= COLUMN HIGHLIGHTS ================= */
         .plat-nomor {
-            color: var(--accent-yellow);
+            color: var(--accent-blue);
             font-family: 'Arial', sans-serif;
             font-size: 21px !important;
             font-weight: 900;
             letter-spacing: 1px;
-            text-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
         }
         .tujuan { color: var(--accent-green); font-weight: 800; }
         .waktu { font-family: 'Arial', sans-serif; color: #fff; font-weight: 700; }
@@ -243,7 +243,7 @@
             display: flex;
             white-space: nowrap;
             padding-left: 100%;
-            animation: marquee 25s linear infinite;
+            animation: marquee 50s linear infinite;
         }
         @keyframes marquee {
             0% { transform: translate3d(0, 0, 0); }
