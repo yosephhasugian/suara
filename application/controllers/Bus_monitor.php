@@ -514,31 +514,35 @@ public function save_bus_masuk()
         return;
     }
 
-    // ================= DATABASE 2 =================
-    $db2 = $this->load->database('db2', TRUE);
-
     // ================= AMBIL DATA PO =================
-    $bus = $db2->query("
-        SELECT 
-            tb.nopol,
-            tb.id_po,
-            po.nama_po
+    $nama_po = trim($this->input->post('nama_po'));
 
-        FROM terminal_boardingpass tb
+    if (!$nama_po) {
+        // ================= DATABASE 2 =================
+        $db2 = $this->load->database('db2', TRUE);
 
-        LEFT JOIN tbl_po po
-            ON po.id_po = tb.id_po
+        $bus = $db2->query("
+            SELECT 
+                tb.nopol,
+                tb.id_po,
+                po.nama_po
 
-        WHERE REPLACE(tb.nopol, ' ', '') = ?
+            FROM terminal_boardingpass tb
 
-        LIMIT 1
-    ", array($plat_clean))->row();
+            LEFT JOIN tbl_po po
+                ON po.id_po = tb.id_po
 
-    // ================= DEFAULT =================
-    $nama_po = 'PO Tidak Dikenal';
+            WHERE REPLACE(tb.nopol, ' ', '') = ?
 
-    if($bus){
-        $nama_po = $bus->nama_po;
+            LIMIT 1
+        ", array($plat_clean))->row();
+
+        // ================= DEFAULT =================
+        $nama_po = 'PO Tidak Dikenal';
+
+        if($bus){
+            $nama_po = $bus->nama_po;
+        }
     }
 
     // ================= INSERT =================

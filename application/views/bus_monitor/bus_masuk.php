@@ -63,6 +63,7 @@
                     <input
                         type="text"
                         id="nama_po"
+                        name="nama_po"
                         class="form-control bg-light"
                         readonly
                         placeholder="Otomatis dari database"
@@ -277,6 +278,7 @@ $('#plat_nomor').on('keyup', function(){
 
     if(plat.length < 3){
         $('#nama_po').val('');
+        $('#nama_po').attr('readonly', true).addClass('bg-light').attr('placeholder', 'Otomatis dari database');
         return;
     }
 
@@ -297,13 +299,16 @@ $('#plat_nomor').on('keyup', function(){
             if(res.status){
 
                 $('#nama_po').val(res.nama_po);
+                $('#nama_po').attr('readonly', true).addClass('bg-light').attr('placeholder', 'Otomatis dari database');
 
             } else {
 
                 if (res.is_active) {
                     $('#nama_po').val(res.message);
+                    $('#nama_po').attr('readonly', true).addClass('bg-light').attr('placeholder', 'Otomatis dari database');
                 } else {
-                    $('#nama_po').val('PO tidak ditemukan');
+                    $('#nama_po').val('');
+                    $('#nama_po').removeAttr('readonly').removeClass('bg-light').attr('placeholder', 'Ketik Nama PO secara manual');
                 }
 
             }
@@ -328,6 +333,7 @@ $('#formBusMasuk').submit(function(e){
 
         data: {
             plat_nomor: $('#plat_nomor').val(),
+            nama_po: $('#nama_po').val(),
             target_area: $('#target_area').val(),
             tujuan: $('#tujuan').val()
         },
@@ -345,6 +351,7 @@ $('#formBusMasuk').submit(function(e){
                 });
 
                 $('#formBusMasuk')[0].reset();
+                $('#nama_po').attr('readonly', true).addClass('bg-light').attr('placeholder', 'Otomatis dari database');
 
                 loadBus();
 
