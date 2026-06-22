@@ -212,7 +212,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <label class="form-label">🔀 Kategori Panggilan</label>
                                         <select name="kategori" class="form-select" id="kategoriPanggilan" required>
                                             <option value="perorangan" selected>Perorangan (Nama Penumpang)</option>
-                                            <option value="po">PO (Nomor Plat Bus)</option>
+                                            <option value="po">PO (Plat / Body / Seri Bus)</option>
                                         </select>
                                     </div>
                                     <div class="col-12 mb-3">
