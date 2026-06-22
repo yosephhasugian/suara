@@ -93,7 +93,7 @@ public function index() {
             );
         } elseif ($kategori === 'po_seri') {
             $text_id = sprintf(
-                "Mohon perhatian. Kepada seluruh penumpang bus %s dengan tipe bus %s, tujuan %s, Mohon agar segera menaiki bus Anda di pintu %s, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.",
+                "Mohon perhatian. Kepada seluruh penumpang bus %s dengan seri atau tipe bus %s, tujuan %s, Mohon agar segera menaiki bus Anda di pintu %s, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.",
                 $po, $penumpang, $jurusan, $pintu
             );
         } else {
