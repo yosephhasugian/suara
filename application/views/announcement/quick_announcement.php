@@ -212,7 +212,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <label class="form-label">🔀 Kategori Panggilan</label>
                                         <select name="kategori" class="form-select" id="kategoriPanggilan" required>
                                             <option value="perorangan" selected>Perorangan (Nama Penumpang)</option>
-                                            <option value="po">PO (Plat / Body / Seri Bus)</option>
+                                            <option value="po_plat">PO (Plat Nomor)</option>
+                                            <option value="po_body">PO (No. Body)</option>
+                                            <option value="po_seri">PO (Seri / Tipe Bus)</option>
                                         </select>
                                     </div>
                                     <div class="col-12 mb-3">
@@ -292,9 +294,15 @@ $(document).ready(function() {
         let pintu = $('input[name="pintu"]').val() || '[Pintu]';
         
         let previewText = '';
-        if (kategori === 'po') {
-            let plat = penumpangVal || '[Plat / Body / Seri Bus]';
-            previewText = `Mohon perhatian. Kepada seluruh penumpang bus <strong class="text-warning">${po}</strong> dengan plat nomor atau bodi <strong class="text-warning">${plat}</strong>, tujuan <strong class="text-warning">${jurusan}</strong>, Mohon agar segera menaiki bus Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
+        if (kategori === 'po_plat') {
+            let plat = penumpangVal || '[Plat nomor]';
+            previewText = `Mohon perhatian. Kepada seluruh penumpang bus <strong class="text-warning">${po}</strong> dengan plat nomor <strong class="text-warning">${plat}</strong>, tujuan <strong class="text-warning">${jurusan}</strong>, Mohon agar segera menaiki bus Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
+        } else if (kategori === 'po_body') {
+            let body = penumpangVal || '[No. body]';
+            previewText = `Mohon perhatian. Kepada seluruh penumpang bus <strong class="text-warning">${po}</strong> dengan nomor bodi <strong class="text-warning">${body}</strong>, tujuan <strong class="text-warning">${jurusan}</strong>, Mohon agar segera menaiki bus Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
+        } else if (kategori === 'po_seri') {
+            let tipe = penumpangVal || '[Seri / tipe bus]';
+            previewText = `Mohon perhatian. Kepada seluruh penumpang bus <strong class="text-warning">${po}</strong> dengan tipe bus <strong class="text-warning">${tipe}</strong>, tujuan <strong class="text-warning">${jurusan}</strong>, Mohon agar segera menaiki bus Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
         } else {
             let penumpang = penumpangVal || '[Nama Penumpang]';
             previewText = `Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama <strong class="text-warning">${penumpang}</strong>. Untuk penumpang bus <strong class="text-warning">${po}</strong> tujuan <strong class="text-warning">${jurusan}</strong>, ditunggu kehadiran Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
@@ -305,9 +313,15 @@ $(document).ready(function() {
     // Toggle labels & placeholders on category change
     $('#kategoriPanggilan').on('change', function() {
         let val = $(this).val();
-        if (val === 'po') {
-            $('#labelPenumpang').html('🔢 Plat Nomor / No. Body / Seri Bus');
-            $('#inputPenumpang').attr('placeholder', 'Masukkan Plat Nomor, No. Body, atau Seri/Tipe Bus (Contoh: B 1234 XYZ / Body 88 / Jetbus 5)');
+        if (val === 'po_plat') {
+            $('#labelPenumpang').html('🔢 Plat Nomor');
+            $('#inputPenumpang').attr('placeholder', 'Contoh: B 1234 XYZ');
+        } else if (val === 'po_body') {
+            $('#labelPenumpang').html('🔢 Nomor Bodi');
+            $('#inputPenumpang').attr('placeholder', 'Contoh: Body 88 atau 102');
+        } else if (val === 'po_seri') {
+            $('#labelPenumpang').html('🚌 Seri / Tipe Bus');
+            $('#inputPenumpang').attr('placeholder', 'Contoh: Jetbus 5 atau Double Decker');
         } else {
             $('#labelPenumpang').html('👤 Nama Penumpang');
             $('#inputPenumpang').attr('placeholder', 'Contoh: Bapak/Ibu. Poltak Hasugian');
