@@ -79,10 +79,16 @@ public function index() {
         }
 
         if ($kategori === 'po') {
-            // Spell out the license plate number for clear TTS reading
-            $plat_spelled = implode(' ', str_split(str_replace(' ', '', $penumpang)));
+            // Check if it's a license plate (starts with 1-2 letters, then digits, then letters) to spell it out.
+            // Otherwise, keep it as is (e.g. body number / bus series).
+            $clean_penumpang = trim(str_replace(' ', '', $penumpang));
+            if (preg_match('/^[a-zA-Z]{1,2}\d{1,4}[a-zA-Z]{0,3}$/', $clean_penumpang)) {
+                $plat_spelled = implode(' ', str_split($clean_penumpang));
+            } else {
+                $plat_spelled = $penumpang;
+            }
             $text_id = sprintf(
-                "Mohon perhatian. Kepada seluruh penumpang bus %s dengan plat nomor %s, tujuan %s, Mohon agar segera menaiki bus Anda di pintu %s, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.",
+                "Mohon perhatian. Kepada seluruh penumpang bus %s dengan plat nomor atau bodi %s, tujuan %s, Mohon agar segera menaiki bus Anda di pintu %s, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.",
                 $po, $plat_spelled, $jurusan, $pintu
             );
         } else {

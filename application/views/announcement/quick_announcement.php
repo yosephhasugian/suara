@@ -293,8 +293,8 @@ $(document).ready(function() {
         
         let previewText = '';
         if (kategori === 'po') {
-            let plat = penumpangVal || '[Plat nomor]';
-            previewText = `Mohon perhatian. Kepada seluruh penumpang bus <strong class="text-warning">${po}</strong> dengan plat nomor <strong class="text-warning">${plat}</strong>, tujuan <strong class="text-warning">${jurusan}</strong>, Mohon agar segera menaiki bus Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
+            let plat = penumpangVal || '[Plat / Body / Seri Bus]';
+            previewText = `Mohon perhatian. Kepada seluruh penumpang bus <strong class="text-warning">${po}</strong> dengan plat nomor atau bodi <strong class="text-warning">${plat}</strong>, tujuan <strong class="text-warning">${jurusan}</strong>, Mohon agar segera menaiki bus Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
         } else {
             let penumpang = penumpangVal || '[Nama Penumpang]';
             previewText = `Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama <strong class="text-warning">${penumpang}</strong>. Untuk penumpang bus <strong class="text-warning">${po}</strong> tujuan <strong class="text-warning">${jurusan}</strong>, ditunggu kehadiran Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
@@ -306,8 +306,8 @@ $(document).ready(function() {
     $('#kategoriPanggilan').on('change', function() {
         let val = $(this).val();
         if (val === 'po') {
-            $('#labelPenumpang').html('🔢 Plat Nomor');
-            $('#inputPenumpang').attr('placeholder', 'Contoh: B 1234 XYZ');
+            $('#labelPenumpang').html('🔢 Plat Nomor / No. Body / Seri Bus');
+            $('#inputPenumpang').attr('placeholder', 'Masukkan Plat Nomor, No. Body, atau Seri/Tipe Bus (Contoh: B 1234 XYZ / Body 88 / Jetbus 5)');
         } else {
             $('#labelPenumpang').html('👤 Nama Penumpang');
             $('#inputPenumpang').attr('placeholder', 'Contoh: Bapak/Ibu. Poltak Hasugian');
