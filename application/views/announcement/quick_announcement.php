@@ -209,8 +209,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <form id="formManualAnnouncer">
                                 <div class="row mb-3">
                                     <div class="col-12 mb-3">
-                                        <label class="form-label">👤 Nama Penumpang</label>
-                                        <input type="text" class="form-control" name="penumpang" placeholder="Contoh: Bapak/Ibu. Poltak Hasugian" required>
+                                        <label class="form-label">🔀 Kategori Panggilan</label>
+                                        <select name="kategori" class="form-select" id="kategoriPanggilan" required>
+                                            <option value="perorangan" selected>Perorangan (Nama Penumpang)</option>
+                                            <option value="po">PO (Nomor Plat Bus)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label" id="labelPenumpang">👤 Nama Penumpang</label>
+                                        <input type="text" class="form-control" name="penumpang" id="inputPenumpang" placeholder="Contoh: Bapak/Ibu. Poltak Hasugian" required>
                                     </div>
                                     <div class="col-6 mb-3">
                                         <label class="form-label">🚌 Nama PO / Perusahaan</label>
@@ -278,14 +285,35 @@ $(document).ready(function() {
 
     // Dynamic Live Preview for Announcer Manual
     function updatePreview() {
-        let penumpang = $('input[name="penumpang"]').val() || '[Nama Penumpang]';
+        let kategori = $('#kategoriPanggilan').val();
+        let penumpangVal = $('input[name="penumpang"]').val();
         let po = $('input[name="po"]').val() || '[PO]';
         let jurusan = $('input[name="jurusan"]').val() || '[Jurusan]';
         let pintu = $('input[name="pintu"]').val() || '[Pintu]';
         
-        let previewText = `Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama <strong class="text-warning">${penumpang}</strong>. Untuk penumpang bus <strong class="text-warning">${po}</strong> tujuan <strong class="text-warning">${jurusan}</strong>, ditunggu kehadiran Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
+        let previewText = '';
+        if (kategori === 'po') {
+            let plat = penumpangVal || '[Plat nomor]';
+            previewText = `Mohon perhatian. Kepada seluruh penumpang bus <strong class="text-warning">${po}</strong> dengan plat nomor <strong class="text-warning">${plat}</strong>, tujuan <strong class="text-warning">${jurusan}</strong>, Mohon agar segera menaiki bus Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
+        } else {
+            let penumpang = penumpangVal || '[Nama Penumpang]';
+            previewText = `Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama <strong class="text-warning">${penumpang}</strong>. Untuk penumpang bus <strong class="text-warning">${po}</strong> tujuan <strong class="text-warning">${jurusan}</strong>, ditunggu kehadiran Anda di pintu <strong class="text-warning">${pintu}</strong>, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.`;
+        }
         $('#announcerPreview').html(previewText);
     }
+
+    // Toggle labels & placeholders on category change
+    $('#kategoriPanggilan').on('change', function() {
+        let val = $(this).val();
+        if (val === 'po') {
+            $('#labelPenumpang').html('🔢 Plat Nomor');
+            $('#inputPenumpang').attr('placeholder', 'Contoh: B 1234 XYZ');
+        } else {
+            $('#labelPenumpang').html('👤 Nama Penumpang');
+            $('#inputPenumpang').attr('placeholder', 'Contoh: Bapak/Ibu. Poltak Hasugian');
+        }
+        updatePreview();
+    });
 
     $('input[name="penumpang"], input[name="po"], input[name="jurusan"], input[name="pintu"]').on('input', updatePreview);
 
@@ -377,7 +405,7 @@ $(document).ready(function() {
                         confirmButtonColor: '#a855f7'
                     });
                     $('#formManualAnnouncer')[0].reset();
-                    updatePreview();
+                    $('#kategoriPanggilan').trigger('change');
                 } else {
                     Swal.fire({
                         icon: 'error',

@@ -64,6 +64,7 @@ public function index() {
 
     // ✅ POST: Tambah announcer manual
     public function add_announcer() {
+        $kategori = $this->input->post('kategori', TRUE) ?: 'perorangan';
         $penumpang = $this->input->post('penumpang', TRUE);
         $po = $this->input->post('po', TRUE);
         $jurusan = $this->input->post('jurusan', TRUE);
@@ -77,10 +78,19 @@ public function index() {
             $delay = '1.5';
         }
 
-        $text_id = sprintf(
-            "Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama %s. Untuk penumpang bus %s tujuan %s, ditunggu kehadiran Anda di pintu %s, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.",
-            $penumpang, $po, $jurusan, $pintu
-        );
+        if ($kategori === 'po') {
+            // Spell out the license plate number for clear TTS reading
+            $plat_spelled = implode(' ', str_split(str_replace(' ', '', $penumpang)));
+            $text_id = sprintf(
+                "Mohon perhatian. Kepada seluruh penumpang bus %s dengan plat nomor %s, tujuan %s, Mohon agar segera menaiki bus Anda di pintu %s, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.",
+                $po, $plat_spelled, $jurusan, $pintu
+            );
+        } else {
+            $text_id = sprintf(
+                "Mohon perhatian. Panggilan ditujukan kepada penumpang atas nama %s. Untuk penumpang bus %s tujuan %s, ditunggu kehadiran Anda di pintu %s, dikarenakan bus Anda akan segera diberangkatkan. Terima kasih.",
+                $penumpang, $po, $jurusan, $pintu
+            );
+        }
 
         // Ulangi teks sebanyak $repeat kali
         $text_array = [];
