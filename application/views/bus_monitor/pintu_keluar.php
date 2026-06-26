@@ -58,10 +58,14 @@ function loadBus(){
                 // TAMPILKAN AREA KEDATANGAN, PENGENDAPAN, KEBERANGKATAN, DAN MASUK (kecuali 'berangkat')
                 if(b.area !== 'berangkat' && b.plat_nomor) {
                     
-                    let jam = '--:--';
+                    let waktuMasuk = '--';
                     if (b.created_at) {
-                        let dt = new Date(b.created_at);
-                        jam = dt.getHours().toString().padStart(2, '0') + ':' + dt.getMinutes().toString().padStart(2, '0');
+                        let parts = b.created_at.split(' ');
+                        if (parts.length === 2) {
+                            let d = parts[0].split('-');
+                            let t = parts[1].split(':');
+                            waktuMasuk = `${d[2]}-${d[1]}-${d[0]} ${t[0]}:${t[1]}`;
+                        }
                     }
 
                     let badgeColor = '';
@@ -81,12 +85,12 @@ function loadBus(){
 
                     html += `
                         <div class="card mb-2 shadow-sm border-0" style="cursor:pointer; ${customStyle}" 
-                             onclick="pilih(${b.id}, '${b.plat_nomor}', '${b.nama_po ?? '-'}', '${b.tujuan ?? '-'}', ${isBypass}, '${jam}')">
+                             onclick="pilih(${b.id}, '${b.plat_nomor}', '${b.nama_po ?? '-'}', '${b.tujuan ?? '-'}', ${isBypass}, '${waktuMasuk}')">
                             <div class="card-body p-2 d-flex justify-content-between align-items-center">
                                 <div>
                                     <strong class="text-dark" style="font-size: 1.2rem;">${b.plat_nomor}</strong><br>
                                     <small class="text-muted text-uppercase">${b.nama_po ?? '-'}</small><br>
-                                    <span class="text-danger fw-bold d-inline-block mt-1" style="font-size: 1.05rem;"><i class="far fa-clock me-1"></i> Masuk: ${jam} WIB</span>
+                                    <span class="text-danger fw-bold d-inline-block mt-1" style="font-size: 1.05rem;"><i class="far fa-clock me-1"></i> Masuk: ${waktuMasuk} WIB</span>
                                 </div>
                                 <div class="text-end">
                                     <span class="badge ${badgeColor} text-white">${areaName}</span>
@@ -102,7 +106,7 @@ function loadBus(){
     }, 'json');
 }
 
-function pilih(id, nopol, po, tujuan, isBypass, jam){
+function pilih(id, nopol, po, tujuan, isBypass, waktuMasuk){
     if (isBypass) {
         Swal.fire({
             title: 'Bypass Dicegah!',
@@ -117,7 +121,7 @@ function pilih(id, nopol, po, tujuan, isBypass, jam){
     }
     $('#id').val(id);
     $('#nopol').val(nopol);
-    $('#info_bus').html(`<strong>${po}</strong><br><span class="text-primary">${tujuan}</span><br><span class="text-danger fw-bold d-inline-block mt-1" style="font-size: 1.1rem;"><i class="far fa-clock me-1"></i> Masuk: ${jam} WIB</span>`);
+    $('#info_bus').html(`<strong>${po}</strong><br><span class="text-primary">${tujuan}</span><br><span class="text-danger fw-bold d-inline-block mt-1" style="font-size: 1.1rem;"><i class="far fa-clock me-1"></i> Masuk: ${waktuMasuk} WIB</span>`);
 }
 
 function simpan(){
