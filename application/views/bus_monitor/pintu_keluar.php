@@ -58,6 +58,12 @@ function loadBus(){
                 // TAMPILKAN AREA KEDATANGAN, PENGENDAPAN, KEBERANGKATAN, DAN MASUK (kecuali 'berangkat')
                 if(b.area !== 'berangkat' && b.plat_nomor) {
                     
+                    let jam = '--:--';
+                    if (b.created_at) {
+                        let dt = new Date(b.created_at);
+                        jam = dt.getHours().toString().padStart(2, '0') + ':' + dt.getMinutes().toString().padStart(2, '0');
+                    }
+
                     let badgeColor = '';
                     let areaName = '';
                     let isBypass = (b.area === 'masuk') ? 1 : 0;
@@ -75,11 +81,12 @@ function loadBus(){
 
                     html += `
                         <div class="card mb-2 shadow-sm border-0" style="cursor:pointer; ${customStyle}" 
-                             onclick="pilih(${b.id}, '${b.plat_nomor}', '${b.nama_po ?? '-'}', '${b.tujuan ?? '-'}', ${isBypass})">
+                             onclick="pilih(${b.id}, '${b.plat_nomor}', '${b.nama_po ?? '-'}', '${b.tujuan ?? '-'}', ${isBypass}, '${jam}')">
                             <div class="card-body p-2 d-flex justify-content-between align-items-center">
                                 <div>
                                     <strong class="text-dark" style="font-size: 1.2rem;">${b.plat_nomor}</strong><br>
-                                    <small class="text-muted text-uppercase">${b.nama_po ?? '-'}</small>
+                                    <small class="text-muted text-uppercase">${b.nama_po ?? '-'}</small><br>
+                                    <small class="text-muted"><i class="far fa-clock me-1"></i> Masuk: ${jam} WIB</small>
                                 </div>
                                 <div class="text-end">
                                     <span class="badge ${badgeColor} text-white">${areaName}</span>
@@ -95,7 +102,7 @@ function loadBus(){
     }, 'json');
 }
 
-function pilih(id, nopol, po, tujuan, isBypass){
+function pilih(id, nopol, po, tujuan, isBypass, jam){
     if (isBypass) {
         Swal.fire({
             title: 'Bypass Dicegah!',
@@ -110,7 +117,7 @@ function pilih(id, nopol, po, tujuan, isBypass){
     }
     $('#id').val(id);
     $('#nopol').val(nopol);
-    $('#info_bus').html(`<strong>${po}</strong><br><span class="text-primary">${tujuan}</span>`);
+    $('#info_bus').html(`<strong>${po}</strong><br><span class="text-primary">${tujuan}</span><br><small class="text-muted"><i class="far fa-clock me-1"></i> Masuk: ${jam} WIB</small>`);
 }
 
 function simpan(){
