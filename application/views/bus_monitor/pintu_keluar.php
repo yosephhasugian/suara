@@ -86,7 +86,7 @@ function loadBus(){
                                 <div>
                                     <strong class="text-dark" style="font-size: 1.2rem;">${b.plat_nomor}</strong><br>
                                     <small class="text-muted text-uppercase">${b.nama_po ?? '-'}</small><br>
-                                    <small class="text-muted"><i class="far fa-clock me-1"></i> Masuk: ${jam} WIB</small>
+                                    <span class="text-danger fw-bold d-inline-block mt-1" style="font-size: 1.05rem;"><i class="far fa-clock me-1"></i> Masuk: ${jam} WIB</span>
                                 </div>
                                 <div class="text-end">
                                     <span class="badge ${badgeColor} text-white">${areaName}</span>
@@ -117,7 +117,7 @@ function pilih(id, nopol, po, tujuan, isBypass, jam){
     }
     $('#id').val(id);
     $('#nopol').val(nopol);
-    $('#info_bus').html(`<strong>${po}</strong><br><span class="text-primary">${tujuan}</span><br><small class="text-muted"><i class="far fa-clock me-1"></i> Masuk: ${jam} WIB</small>`);
+    $('#info_bus').html(`<strong>${po}</strong><br><span class="text-primary">${tujuan}</span><br><span class="text-danger fw-bold d-inline-block mt-1" style="font-size: 1.1rem;"><i class="far fa-clock me-1"></i> Masuk: ${jam} WIB</span>`);
 }
 
 function simpan(){
